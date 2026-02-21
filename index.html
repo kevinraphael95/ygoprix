@@ -4,721 +4,928 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YGO Price Duel</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:    #0c0c0c;
-  --panel: #141414;
-  --sep:   #0c0c0c;
-  --gold:  #e8b84b;
-  --gold2: #ffd166;
-  --green: #06d6a0;
-  --red:   #ef233c;
-  --text:  #f0ece4;
-  --muted: #5a5a5a;
-  --W: min(380px, 96vw);
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; overflow: hidden; user-select: none; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* ── TOPBAR ── */
-.topbar {
-  position: fixed; top: 0; left: 0; right: 0; height: 52px; z-index: 50;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 1.2rem;
-  background: rgba(12,12,12,0.95); backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.1em; background: linear-gradient(90deg,var(--gold),var(--gold2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.hud { display: flex; align-items: center; gap: 1.4rem; }
-.hud-stat { text-align: center; line-height: 1; }
-.hud-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--gold2); }
-.hud-lbl { font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 1px; }
-.hearts { display: flex; gap: 3px; align-items: center; }
-.heart { font-size: 0.95rem; transition: all 0.3s; }
-.heart.dead { opacity: 0.12; transform: scale(0.8); }
-
-/* ── STAGE ── */
-.stage {
-  position: fixed; inset: 52px 0 0 0;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-
-/* ── ARENA — two stacked halves like moreorless.io ── */
-.arena {
-  position: relative;
-  width: var(--W);
-  height: calc(var(--W) * 1.2); /* comfortable height */
-  border-radius: 18px;
+html, body {
+  width: 100%; height: 100%;
+  font-family: 'Nunito', sans-serif;
+  background: #111;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+  color: #fff;
+  user-select: none;
 }
 
-/* Each half = one card art filling 50% height */
-.half {
-  position: absolute; left: 0; right: 0;
-  height: calc(50% - 25px); /* 25px = half of divider */
-  overflow: hidden;
-}
-.half.top { top: 0; }
-.half.bot { bottom: 0; }
-
-/* Background image */
-.half-bg {
-  position: absolute; inset: 0;
-  background-size: cover; background-position: center top;
-  transition: transform 6s ease;
-  transform: scale(1.05);
-}
-.half.bot .half-bg { background-position: center bottom; }
-.half:hover .half-bg { transform: scale(1); }
-
-/* Dark overlay */
-.half-overlay {
-  position: absolute; inset: 0;
+/* ══════════════════════════════════════════════
+   HEADER — logo + score
+══════════════════════════════════════════════ */
+#header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: transparent;
   pointer-events: none;
 }
-.half.top .half-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%); }
-.half.bot .half-overlay { background: linear-gradient(to top,  rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%); }
 
-/* Card info overlay */
-.half-info {
-  position: absolute; left: 1rem; right: 5.5rem;
-  z-index: 5; pointer-events: none;
+.logo {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  pointer-events: all;
 }
-.half.top .half-info { bottom: 0.8rem; }
-.half.bot .half-info { top: 0.8rem; }
+.logo span { color: #ffd166; }
 
-.half-tag {
-  font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(255,255,255,0.4); font-family: 'Barlow', sans-serif; font-weight: 500;
-  display: block; margin-bottom: 3px;
+.score-badge {
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px;
+  padding: 6px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: all;
 }
-.half-name {
-  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
-  font-size: clamp(0.9rem, 2.5vw, 1.15rem);
-  color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,0.9);
-  line-height: 1.2;
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+.score-item .val {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #ffd166;
+}
+.score-item .lbl {
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.45);
+  margin-top: 1px;
+}
+.score-sep {
+  width: 1px; height: 24px;
+  background: rgba(255,255,255,0.15);
 }
 
-/* Price badge */
-.price-badge {
-  position: absolute; right: 0.8rem; z-index: 5;
-  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
-  padding: 0.4rem 0.65rem; text-align: center;
-  min-width: 70px;
+/* ══════════════════════════════════════════════
+   LIVES
+══════════════════════════════════════════════ */
+#lives {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+  pointer-events: none;
 }
-.half.top .price-badge { bottom: 0.8rem; }
-.half.bot .price-badge { top: 0.8rem; }
-
-.pb-lbl { font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 2px; }
-.pb-val {
-  font-family: 'Barlow Condensed', sans-serif; font-size: 1.25rem; font-weight: 800;
-  color: var(--gold2); line-height: 1;
+.life {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255,255,255,0.6);
+  transition: all 0.3s;
 }
-.pb-val.secret { color: rgba(255,255,255,0.18); letter-spacing: 0.25em; font-size: 0.95rem; }
+.life.lost {
+  background: rgba(255,255,255,0.18);
+  box-shadow: none;
+}
 
-/* Shimmer loading state */
-.half-shimmer {
-  position: absolute; inset: 0; z-index: 10;
-  background: linear-gradient(90deg, #181818 0%, #222 50%, #181818 100%);
+/* ══════════════════════════════════════════════
+   GAME AREA — two full-screen halves
+══════════════════════════════════════════════ */
+#game {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Each card panel = 50% of screen height */
+.panel {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* Background image fills the panel */
+.panel-bg {
+  position: absolute;
+  inset: -5%;  /* slight overscan for ken burns */
+  background-size: cover;
+  background-position: center;
+  transition: transform 8s ease;
+  transform: scale(1.06);
+}
+.panel:hover .panel-bg {
+  transform: scale(1.0);
+}
+
+/* Gradient so text is readable */
+.panel-top .panel-bg-grad {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.08) 0%,
+    rgba(0,0,0,0.18) 40%,
+    rgba(0,0,0,0.72) 100%
+  );
+}
+.panel-bot .panel-bg-grad {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.08) 0%,
+    rgba(0,0,0,0.18) 40%,
+    rgba(0,0,0,0.72) 100%
+  );
+}
+
+/* Card text info */
+.panel-content {
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 5;
+  padding: 0 clamp(20px, 5vw, 60px);
+}
+.panel-top .panel-content { bottom: 24px; }
+.panel-bot .panel-content { top: 24px; }
+
+.panel-eyebrow {
+  font-size: clamp(0.55rem, 1.4vw, 0.7rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+.panel-name {
+  font-size: clamp(1.2rem, 3.5vw, 2rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.7);
+  max-width: 600px;
+}
+.panel-type {
+  font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* Price tag — big and bold like moreorless */
+.price-tag {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  border-radius: 16px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  min-width: 120px;
+}
+.price-tag .pt-lbl {
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+.price-tag .pt-val {
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  font-weight: 900;
+  color: #ffd166;
+  line-height: 1;
+  margin-top: 2px;
+}
+.price-tag .pt-val.hidden {
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.3em;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+/* Shimmer overlay for loading */
+.shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: linear-gradient(90deg, #1a1a1a 0%, #272727 50%, #1a1a1a 100%);
   background-size: 200% 100%;
-  animation: shimmer 1.4s ease infinite;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 8px;
+  animation: shim 1.3s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  opacity: 0.5;
 }
-.half-shimmer.gone { display: none; }
-@keyframes shimmer { 0%{background-position:-200% 0}100%{background-position:200% 0} }
-.shim-icon { font-size: 2rem; opacity: 0.15; }
-
-/* ── DIVIDER ── */
-.divider {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  left: 0; right: 0; height: 50px; z-index: 20;
-  background: var(--sep);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 0.8rem; gap: 0.5rem;
+.shimmer.off { display: none; }
+@keyframes shim {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
-.div-label {
-  font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; font-weight: 600;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
-  white-space: nowrap; flex-shrink: 0;
+
+/* ══════════════════════════════════════════════
+   DIVIDER — center strip with buttons
+══════════════════════════════════════════════ */
+#divider {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0; right: 0;
+  z-index: 60;
+  height: 72px;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
-.div-btns { display: flex; gap: 0.4rem; }
 
-.btn-choice {
-  padding: 0.38rem 0.85rem;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  color: var(--text); font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-  border-radius: 7px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
-}
-.btn-choice:hover:not(:disabled) { background: rgba(232,184,75,0.14); border-color: var(--gold); color: var(--gold2); }
-.btn-choice:disabled { opacity: 0.2; cursor: not-allowed; }
-.btn-choice.win { background: rgba(6,214,160,0.18); border-color: var(--green); color: var(--green); }
-.btn-choice.lose { background: rgba(239,35,60,0.14); border-color: var(--red); color: var(--red); }
-
-/* Slide in animation for card B */
-.half.bot { transform: translateY(110%); transition: transform 0.6s cubic-bezier(0.22,1,0.36,1); }
-.half.bot.in { transform: translateY(0); }
-
-/* ── RESULT BANNER ── */
-.result-banner {
-  position: fixed; top: 62px; left: 50%; transform: translateX(-50%) translateY(-6px);
-  background: rgba(18,18,18,0.96); backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
-  padding: 0.5rem 1.3rem;
-  font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase; z-index: 80;
-  opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
+.div-question {
+  font-size: clamp(0.65rem, 1.8vw, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
   white-space: nowrap;
 }
-.result-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.result-banner.ok { color: var(--green); border-color: rgba(6,214,160,0.3); }
-.result-banner.ko { color: var(--red);   border-color: rgba(239,35,60,0.3);  }
 
-/* ── NEXT BUTTON ── */
-.next-wrap {
-  position: fixed; bottom: 1.4rem; left: 50%;
-  transform: translateX(-50%) translateY(16px);
-  opacity: 0; pointer-events: none; z-index: 60;
+.btn-guess {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(0.72rem, 1.8vw, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-guess:hover:not(:disabled) {
+  background: rgba(255,209,102,0.18);
+  border-color: #ffd166;
+  color: #ffd166;
+  transform: scale(1.04);
+}
+.btn-guess:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
+.btn-guess.correct {
+  background: rgba(6,214,160,0.22);
+  border-color: #06d6a0;
+  color: #06d6a0;
+}
+.btn-guess.wrong {
+  background: rgba(239,35,60,0.18);
+  border-color: #ef233c;
+  color: #ef233c;
+}
+
+/* ══════════════════════════════════════════════
+   SLIDE-UP animation for bottom panel
+══════════════════════════════════════════════ */
+.panel-bot {
+  transform: translateY(100%);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.panel-bot.slide-in {
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════
+   RESULT TOAST
+══════════════════════════════════════════════ */
+#toast {
+  position: fixed;
+  top: 68px; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(15,15,15,0.95);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.ok { color: #06d6a0; border-color: rgba(6,214,160,0.35); }
+#toast.ko { color: #ef233c; border-color: rgba(239,35,60,0.3); }
+
+/* ══════════════════════════════════════════════
+   NEXT BUTTON
+══════════════════════════════════════════════ */
+#next-btn {
+  position: fixed;
+  bottom: 50px; left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
   transition: opacity 0.3s, transform 0.3s;
 }
-.next-wrap.show { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0); }
-.btn-next {
-  padding: 0.7rem 2.4rem;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: #0c0c0c; font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.05rem; letter-spacing: 0.12em;
-  border: none; border-radius: 10px; cursor: pointer;
-  box-shadow: 0 4px 20px rgba(232,184,75,0.4);
+#next-btn.show {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+#next-btn button {
+  padding: 14px 36px;
+  background: linear-gradient(135deg, #e8b84b, #ffd166);
+  color: #111;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(255,209,102,0.45);
   transition: transform 0.15s, box-shadow 0.15s;
 }
-.btn-next:hover { transform: scale(1.04); box-shadow: 0 6px 28px rgba(232,184,75,0.6); }
+#next-btn button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 32px rgba(255,209,102,0.65);
+}
 
-/* ── GAME OVER ── */
-.go-screen {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(12,12,12,0.96); backdrop-filter: blur(16px);
-  display: none; flex-direction: column; align-items: center;
-  justify-content: center; gap: 1.4rem; text-align: center; padding: 2rem;
+/* ══════════════════════════════════════════════
+   GAME OVER OVERLAY
+══════════════════════════════════════════════ */
+#gameover {
+  position: fixed; inset: 0;
+  z-index: 500;
+  background: rgba(10,10,10,0.96);
+  backdrop-filter: blur(20px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+  padding: 32px;
 }
-.go-screen.show { display: flex; animation: fadeUp 0.4s ease; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+#gameover.show { display: flex; animation: goIn 0.4s ease; }
+@keyframes goIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.go-emoji { font-size: 4rem; }
 .go-title {
-  font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem,10vw,6rem);
-  letter-spacing: 0.06em; color: var(--red);
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 900;
+  color: #ef233c;
+  letter-spacing: -0.02em;
   filter: drop-shadow(0 0 30px rgba(239,35,60,0.5));
+  line-height: 1;
 }
-.go-sub { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: -1rem; }
-.go-stats {
-  display: flex; gap: 2rem; background: var(--panel);
-  border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 1.1rem 2rem;
+.go-sub {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
 }
-.go-stat { text-align: center; }
-.go-stat-v { font-family: 'Barlow Condensed', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold2); line-height: 1; }
-.go-stat-l { font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
-.btn-restart {
-  padding: 0.85rem 2.8rem;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: #0c0c0c; font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem; letter-spacing: 0.1em;
-  border: none; border-radius: 12px; cursor: pointer;
-  box-shadow: 0 4px 24px rgba(232,184,75,0.4);
+.go-cards {
+  display: flex;
+  gap: 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 20px 32px;
+}
+.go-card { text-align: center; }
+.go-card-v {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #ffd166;
+  line-height: 1;
+}
+.go-card-l {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-top: 4px;
+}
+.go-sep { width: 1px; background: rgba(255,255,255,0.1); }
+.go-replay {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #e8b84b, #ffd166);
+  color: #111;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(255,209,102,0.4);
   transition: transform 0.15s;
 }
-.btn-restart:hover { transform: scale(1.05); }
+.go-replay:hover { transform: scale(1.05); }
 
-/* ── PROGRESS BAR ── */
-.progress-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; height: 3px; z-index: 40;
-  background: rgba(255,255,255,0.04);
+/* ══════════════════════════════════════════════
+   PROGRESS BAR (thin, bottom)
+══════════════════════════════════════════════ */
+#progress {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+  z-index: 90;
 }
-.progress-fill {
-  height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2));
-  transition: width 0.4s ease;
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e8b84b, #ffd166);
+  transition: width 0.5s ease;
+  width: 0%;
 }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<header class="topbar">
-  <div class="brand">⚡ YGO Price Duel</div>
-  <div class="hud">
-    <div class="hud-stat">
-      <div class="hud-val" id="scoreEl">0</div>
-      <div class="hud-lbl">Score</div>
+<!-- HEADER -->
+<div id="header">
+  <div class="logo">⚡ <span>YGO</span> Price Duel</div>
+  <div class="score-badge">
+    <div class="score-item">
+      <span class="val" id="sScore">0</span>
+      <span class="lbl">Score</span>
     </div>
-    <div class="hud-stat">
-      <div class="hud-val" id="streakEl" style="color:#f59e0b">0🔥</div>
-      <div class="hud-lbl">Série</div>
+    <div class="score-sep"></div>
+    <div class="score-item">
+      <span class="val" id="sStreak" style="color:#f59e0b">0🔥</span>
+      <span class="lbl">Série</span>
     </div>
-    <div class="hud-stat">
-      <div class="hud-val" id="bestEl">0</div>
-      <div class="hud-lbl">Record</div>
+    <div class="score-sep"></div>
+    <div class="score-item">
+      <span class="val" id="sBest">0</span>
+      <span class="lbl">Record</span>
     </div>
-    <div class="hearts" id="heartsEl"></div>
-  </div>
-</header>
-
-<!-- STAGE -->
-<div class="stage">
-  <div class="arena" id="arena">
-
-    <!-- TOP = Carte A (prix visible) -->
-    <div class="half top" id="halfA">
-      <div class="half-shimmer" id="shimA"><div class="shim-icon">🃏</div></div>
-      <div class="half-bg" id="bgA"></div>
-      <div class="half-overlay"></div>
-      <div class="half-info">
-        <span class="half-tag">Carte A · Prix connu</span>
-        <div class="half-name" id="nameA"></div>
-      </div>
-      <div class="price-badge">
-        <span class="pb-lbl">Cardmarket</span>
-        <div class="pb-val" id="priceA">—</div>
-      </div>
-    </div>
-
-    <!-- DIVIDER -->
-    <div class="divider">
-      <div class="div-label">Laquelle est + chère&nbsp;?</div>
-      <div class="div-btns">
-        <button class="btn-choice" id="btnA" onclick="guess('A')">▲ A plus chère</button>
-        <button class="btn-choice" id="btnB" onclick="guess('B')">▼ B plus chère</button>
-      </div>
-    </div>
-
-    <!-- BOTTOM = Carte B (prix masqué) -->
-    <div class="half bot" id="halfB">
-      <div class="half-shimmer" id="shimB"><div class="shim-icon">🃏</div></div>
-      <div class="half-bg" id="bgB"></div>
-      <div class="half-overlay"></div>
-      <div class="half-info">
-        <span class="half-tag">Carte B · Devinez le prix</span>
-        <div class="half-name" id="nameB"></div>
-      </div>
-      <div class="price-badge">
-        <span class="pb-lbl">Cardmarket</span>
-        <div class="pb-val secret" id="priceB">?</div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- RESULT BANNER -->
-<div class="result-banner" id="banner"></div>
+<!-- GAME PANELS -->
+<div id="game">
+
+  <!-- TOP PANEL = Carte A, prix visible -->
+  <div class="panel panel-top" id="panelTop">
+    <div class="shimmer" id="shimTop">🃏</div>
+    <div class="panel-bg" id="bgTop"></div>
+    <div class="panel-bg-grad"></div>
+    <div class="panel-content">
+      <div class="panel-eyebrow">Carte A · Prix connu</div>
+      <div class="panel-name" id="nameTop">—</div>
+      <div class="panel-type" id="typeTop"></div>
+      <div class="price-tag">
+        <div class="pt-lbl">Cardmarket</div>
+        <div class="pt-val" id="priceTop">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM PANEL = Carte B, prix masqué -->
+  <div class="panel panel-bot" id="panelBot">
+    <div class="shimmer" id="shimBot">🃏</div>
+    <div class="panel-bg" id="bgBot"></div>
+    <div class="panel-bg-grad"></div>
+    <div class="panel-content">
+      <div class="panel-eyebrow">Carte B · Devinez le prix</div>
+      <div class="panel-name" id="nameBot">—</div>
+      <div class="panel-type" id="typeBot"></div>
+      <div class="price-tag">
+        <div class="pt-lbl">Cardmarket</div>
+        <div class="pt-val hidden" id="priceBot">?</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- DIVIDER -->
+<div id="divider">
+  <div class="div-question">Laquelle est + chère ?</div>
+  <button class="btn-guess" id="btnA" onclick="guess('A')">▲ A plus chère</button>
+  <button class="btn-guess" id="btnB" onclick="guess('B')">▼ B plus chère</button>
+</div>
+
+<!-- LIVES -->
+<div id="lives"></div>
+
+<!-- TOAST -->
+<div id="toast"></div>
 
 <!-- NEXT -->
-<div class="next-wrap" id="nextWrap">
-  <button class="btn-next" onclick="nextRound()">CARTE SUIVANTE →</button>
+<div id="next-btn">
+  <button onclick="nextRound()">Carte suivante →</button>
 </div>
 
 <!-- PROGRESS -->
-<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+<div id="progress"><div id="progress-fill"></div></div>
 
 <!-- GAME OVER -->
-<div class="go-screen" id="goScreen">
-  <div class="go-title">DÉFAITE</div>
+<div id="gameover">
+  <div class="go-emoji">💀</div>
+  <div class="go-title">Défaite</div>
   <div class="go-sub">Tu as épuisé tes vies</div>
-  <div class="go-stats">
-    <div class="go-stat"><div class="go-stat-v" id="goScore">0</div><div class="go-stat-l">Score</div></div>
-    <div class="go-stat"><div class="go-stat-v" id="goBest">0</div><div class="go-stat-l">Record</div></div>
+  <div class="go-cards">
+    <div class="go-card">
+      <div class="go-card-v" id="goScore">0</div>
+      <div class="go-card-l">Score final</div>
+    </div>
+    <div class="go-sep"></div>
+    <div class="go-card">
+      <div class="go-card-v" id="goBest">0</div>
+      <div class="go-card-l">Record</div>
+    </div>
   </div>
-  <button class="btn-restart" onclick="restart()">↩ REJOUER</button>
+  <button class="go-replay" onclick="restart()">↩ Rejouer</button>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════
-//  DATASET — cartes réelles YGO avec prix Cardmarket approximatifs
-//  (prix en euros, basés sur données connues, images depuis ygoprodeck)
-//  Les IDs correspondent aux IDs officiels de la base YGOPRODeck
-// ═══════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
+   DATASET — 120+ cartes YGO, IDs réels, prix Cardmarket (€)
+═══════════════════════════════════════════════════════════ */
 const CARDS = [
-  // ── FORMAT: { name, id, price (€ Cardmarket), type }
-  // Prix courants connus (~2024-2025)
-  { name: "Blue-Eyes White Dragon",        id: 89631139,  price: 8.00  },
-  { name: "Dark Magician",                 id: 46986414,  price: 3.50  },
-  { name: "Exodia the Forbidden One",      id: 33396948,  price: 12.00 },
-  { name: "Red-Eyes Black Dragon",         id: 74677422,  price: 2.50  },
-  { name: "Jinzo",                         id: 77585513,  price: 1.80  },
-  { name: "Pot of Greed",                  id: 55144522,  price: 5.00  },
-  { name: "Mirror Force",                  id: 44095762,  price: 0.60  },
-  { name: "Raigeki",                       id: 12580477,  price: 3.00  },
-  { name: "Monster Reborn",                id: 83764718,  price: 0.80  },
-  { name: "Harpie's Feather Duster",       id: 18144506,  price: 6.00  },
-  { name: "Graceful Charity",              id: 79571449,  price: 15.00 },
-  { name: "Delinquent Duo",                id: 44763025,  price: 20.00 },
-  { name: "Pot of Desires",                id: 35261759,  price: 1.50  },
-  { name: "Ash Blossom & Joyous Spring",   id: 14558127,  price: 3.50  },
-  { name: "Effect Veiler",                 id: 97268402,  price: 0.50  },
-  { name: "Ghost Belle & Haunted Mansion", id: 73642296,  price: 0.80  },
-  { name: "Infinite Impermanence",         id: 10045474,  price: 4.00  },
-  { name: "Called by the Grave",           id: 24224830,  price: 1.00  },
-  { name: "Forbidden Droplet",             id: 62265044,  price: 8.00  },
-  { name: "Solemn Judgment",               id: 41420027,  price: 1.50  },
-  { name: "Solemn Strike",                 id: 40605147,  price: 0.80  },
-  { name: "Solemn Warning",                id: 84749824,  price: 0.50  },
-  { name: "Nibiru, the Primal Being",      id: 27204311,  price: 5.00  },
-  { name: "Droll & Lock Bird",             id: 94145683,  price: 2.50  },
-  { name: "Ghost Ogre & Snow Rabbit",      id: 59438930,  price: 1.20  },
-  { name: "D.D. Crow",                     id: 24508238,  price: 0.50  },
-  { name: "Maxx \"C\"",                   id: 23434538,  price: 25.00 },
-  { name: "Hand Destruction",              id: 26385346,  price: 0.40  },
-  { name: "Lightning Storm",               id: 56273280,  price: 6.00  },
-  { name: "Dark Ruler No More",            id: 86118074,  price: 1.20  },
-  { name: "Triple Tactics Talent",         id: 49772895,  price: 5.50  },
-  { name: "Crossout Designator",           id: 65681432,  price: 4.00  },
-  { name: "Mystic Mine",                   id: 61613745,  price: 0.50  },
-  { name: "Skill Drain",                   id: 82732705,  price: 0.60  },
-  { name: "Imperial Order",                id: 61740673,  price: 3.00  },
-  { name: "Appointer of the Red Lotus",    id: 33092842,  price: 7.00  },
-  { name: "Pot of Extravagance",           id: 91998119,  price: 2.00  },
-  { name: "Pot of Prosperity",             id: 1337177,   price: 7.00  },
-  { name: "Upstart Goblin",                id: 70368879,  price: 0.50  },
-  { name: "Terraforming",                  id: 73628505,  price: 0.30  },
-  { name: "One for One",                   id: 67748760,  price: 0.60  },
-  { name: "Foolish Burial",                id: 81439173,  price: 0.50  },
-  { name: "Reinforcement of the Army",     id: 30510505,  price: 0.30  },
-  { name: "Emergency Teleport",            id: 67723438,  price: 1.50  },
-  { name: "Hieratic Seal of the Heavenly Spheres", id: 69065681, price: 1.00 },
-  { name: "Number 39: Utopia",             id: 84013237,  price: 0.40  },
-  { name: "Number S39: Utopia the Lightning", id: 56832966, price: 0.80 },
-  { name: "Tornado Dragon",               id: 6983839,   price: 0.45  },
-  { name: "Steelswarm Roach",              id: 5826408,   price: 0.30  },
-  { name: "Abyss Dweller",                 id: 84886738,  price: 0.40  },
-  { name: "Accesscode Talker",             id: 86066372,  price: 10.00 },
-  { name: "Apollousa, Bow of the Goddess", id: 48680970,  price: 3.50  },
-  { name: "Knightmare Unicorn",            id: 38342335,  price: 0.50  },
-  { name: "Knightmare Phoenix",            id: 2857636,   price: 0.25  },
-  { name: "I:P Masquerena",               id: 65741786,  price: 4.00  },
-  { name: "Crystron Halqifibrax",          id: 50588353,  price: 6.00  },
-  { name: "Salamangreat Almiraj",          id: 75745352,  price: 0.50  },
-  { name: "Baronne de Fleur",              id: 84815190,  price: 15.00 },
-  { name: "Borreload Savage Dragon",       id: 28888669,  price: 2.50  },
-  { name: "Duelittle Chimera",             id: 98777036,  price: 0.30  },
-  { name: "Spright Elf",                   id: 91875359,  price: 2.00  },
-  { name: "Gigantic Spright",              id: 88521771,  price: 1.50  },
-  { name: "Tearlaments Kitkallos",         id: 21887175,  price: 5.00  },
-  { name: "Mudora the Sword Oracle",       id: 84012506,  price: 0.40  },
-  { name: "Keldo the Sacred Protector",    id: 96847929,  price: 0.35  },
-  { name: "Horus the Black Flame Dragon LV8", id: 48228899, price: 0.80 },
-  { name: "Toadally Awesome",              id: 12307878,  price: 1.00  },
-  { name: "Divine Arsenal AA-ZEUS - Sky Thunder", id: 90448279, price: 3.00 },
-  { name: "Phantom Knights' Fog Blade",    id: 25542642,  price: 1.50  },
-  { name: "True King of All Calamities",   id: 60963917,  price: 4.00  },
-  { name: "Eldlich the Golden Lord",       id: 95102327,  price: 1.50  },
-  { name: "Predaplant Verte Anaconda",     id: 77235086,  price: 2.00  },
-  { name: "Naturia Beast",                 id: 28224070,  price: 2.00  },
-  { name: "Scareclaw Light-Heart",         id: 41731100,  price: 0.40  },
-  { name: "Floowandereeze & Robina",       id: 73796571,  price: 0.30  },
-  { name: "Windwitch - Ice Bell",          id: 17514802,  price: 0.20  },
-  { name: "Fossil Dyna Pachycephalo",      id: 42009836,  price: 0.50  },
-  { name: "Thunder King Rai-Oh",           id: 71564252,  price: 0.40  },
-  { name: "Vanity's Emptiness",            id: 50078099,  price: 0.80  },
-  { name: "Dimensional Barrier",           id: 83310433,  price: 0.60  },
-  { name: "Red Reboot",                    id: 13578689,  price: 0.50  },
-  { name: "Waking the Dragon",             id: 64681975,  price: 0.30  },
-  { name: "Rivalry of Warlords",           id: 90846359,  price: 0.30  },
-  { name: "Gozen Match",                   id: 58577036,  price: 0.40  },
-  { name: "Zombie World",                  id: 22320650,  price: 0.40  },
-  { name: "Mystic Mine",                   id: 61613745,  price: 0.50  },
-  { name: "Gravity Bind",                  id: 85742772,  price: 0.25  },
-  { name: "Number 41: Bagooska the Terribly Tired Tapir", id: 38814750, price: 0.50 },
-  { name: "Exciton Knight",                id: 37601374,  price: 0.40  },
-  { name: "Dugares the Timeless",          id: 8279996,   price: 0.40  },
-  { name: "Mekk-Knight Crusadia Avramax",  id: 27551,     price: 0.50  },
-  { name: "Linkuriboh",                    id: 41999284,  price: 0.30  },
-  { name: "Black Luster Soldier - Envoy of the Beginning", id: 72989439, price: 1.20 },
-  { name: "Chaos Emperor Dragon - Envoy of the End", id: 82301904, price: 2.00 },
-  { name: "Breaker the Magical Warrior",   id: 71413901,  price: 0.30  },
-  { name: "Cyber Dragon",                  id: 70095154,  price: 0.40  },
-  { name: "Witch of the Black Forest",     id: 78010363,  price: 1.50  },
-  { name: "Sangan",                        id: 26202165,  price: 0.50  },
-  { name: "Sinister Serpent",              id: 8131171,   price: 0.80  },
-  { name: "Fiber Jar",                     id: 78706415,  price: 4.00  },
-  { name: "Morphing Jar",                  id: 33508719,  price: 0.40  },
-  { name: "Painful Choice",                id: 74191942,  price: 12.00 },
-  { name: "Premature Burial",              id: 70828912,  price: 0.50  },
-  { name: "Heavy Storm",                   id: 19613556,  price: 0.60  },
-  { name: "Mystical Space Typhoon",        id: 5318639,   price: 0.20  },
-  { name: "Twin Twisters",                 id: 81439173,  price: 0.40  },
-  { name: "Book of Moon",                  id: 14087893,  price: 0.30  },
-  { name: "Scapegoat",                     id: 73915051,  price: 0.30  },
-  { name: "Limiter Removal",               id: 23171610,  price: 0.30  },
-  { name: "Pots of Avarice",               id: 67169062,  price: 0.30  },
-  { name: "Sixth Sense",                   id: 30809794,  price: 8.00  },
-  { name: "Gold Sarcophagus",              id: 75500286,  price: 0.50  },
-  { name: "Return from the Different Dimension", id: 27174286, price: 3.50 },
-  { name: "Royal Tribute",                 id: 72405967,  price: 4.00  },
-  { name: "Dark Hole",                     id: 53129443,  price: 0.25  },
-  { name: "Fissure",                       id: 66947414,  price: 0.20  },
-  { name: "Dragon Ravine",                 id: 72868067,  price: 0.30  },
-  { name: "Dragonic Tactics",              id: 10987223,  price: 0.20  },
-  { name: "Sage with Eyes of Blue",        id: 98745000,  price: 0.80  },
-  { name: "The White Stone of Ancients",   id: 78794994,  price: 0.80  },
-  { name: "Dragon Shrine",                 id: 41764722,  price: 0.25  },
-  { name: "Dragon's Mirror",               id: 71490127,  price: 0.30  },
-  { name: "Rivalry of Warlords",           id: 90846359,  price: 0.30  },
-  { name: "Anti-Spell Fragrance",          id: 58921041,  price: 0.40  },
-  { name: "Summon Limit",                  id: 40054150,  price: 0.50  },
-  { name: "There Can Be Only One",         id: 44473213,  price: 0.80  },
-  { name: "Eradicator Epidemic Virus",     id: 40349894,  price: 0.40  },
-  { name: "Deck Devastation Virus",        id: 764861,    price: 0.30  },
-  { name: "Full House",                    id: 21887785,  price: 0.30  },
-  { name: "Armades, Keeper of Boundaries", id: 33689429,  price: 0.30  },
-  { name: "Void Ogre Dragon",              id: 29970117,  price: 0.40  },
-].filter((c,i,arr) => arr.findIndex(x=>x.id===c.id)===i && c.price > 0); // dédoublonnage
+  { name:"Blue-Eyes White Dragon",         type:"Normal Monster",    id:89631139,  price:8.00  },
+  { name:"Dark Magician",                  type:"Normal Monster",    id:46986414,  price:3.50  },
+  { name:"Exodia the Forbidden One",       type:"Normal Monster",    id:33396948,  price:12.00 },
+  { name:"Red-Eyes Black Dragon",          type:"Normal Monster",    id:74677422,  price:2.50  },
+  { name:"Jinzo",                          type:"Effect Monster",    id:77585513,  price:1.80  },
+  { name:"Pot of Greed",                   type:"Spell Card",        id:55144522,  price:5.00  },
+  { name:"Graceful Charity",               type:"Spell Card",        id:79571449,  price:15.00 },
+  { name:"Delinquent Duo",                 type:"Spell Card",        id:44763025,  price:20.00 },
+  { name:"Maxx \"C\"",                    type:"Effect Monster",    id:23434538,  price:25.00 },
+  { name:"Baronne de Fleur",               type:"Synchro Monster",   id:84815190,  price:15.00 },
+  { name:"Accesscode Talker",              type:"Link Monster",      id:86066372,  price:10.00 },
+  { name:"Painful Choice",                 type:"Spell Card",        id:74191942,  price:12.00 },
+  { name:"Sixth Sense",                    type:"Trap Card",         id:30809794,  price:8.00  },
+  { name:"Forbidden Droplet",              type:"Spell Card",        id:62265044,  price:8.00  },
+  { name:"Pot of Prosperity",              type:"Spell Card",        id:1337177,   price:7.00  },
+  { name:"Appointer of the Red Lotus",     type:"Trap Card",         id:33092842,  price:7.00  },
+  { name:"Harpie's Feather Duster",        type:"Spell Card",        id:18144506,  price:6.00  },
+  { name:"Lightning Storm",                type:"Spell Card",        id:56273280,  price:6.00  },
+  { name:"Crystron Halqifibrax",           type:"Link Monster",      id:50588353,  price:6.00  },
+  { name:"Raigeki",                        type:"Spell Card",        id:12580477,  price:3.00  },
+  { name:"Triple Tactics Talent",          type:"Spell Card",        id:49772895,  price:5.50  },
+  { name:"Nibiru, the Primal Being",       type:"Effect Monster",    id:27204311,  price:5.00  },
+  { name:"Tearlaments Kitkallos",          type:"Fusion Monster",    id:21887175,  price:5.00  },
+  { name:"True King of All Calamities",    type:"XYZ Monster",       id:60963917,  price:4.00  },
+  { name:"Infinite Impermanence",          type:"Trap Card",         id:10045474,  price:4.00  },
+  { name:"Crossout Designator",            type:"Spell Card",        id:65681432,  price:4.00  },
+  { name:"I:P Masquerena",                 type:"Link Monster",      id:65741786,  price:4.00  },
+  { name:"Fiber Jar",                      type:"Flip Monster",      id:78706415,  price:4.00  },
+  { name:"Royal Tribute",                  type:"Trap Card",         id:72405967,  price:4.00  },
+  { name:"Return from the Different Dimension", type:"Trap Card",    id:27174286,  price:3.50  },
+  { name:"Ash Blossom & Joyous Spring",    type:"Tuner Monster",     id:14558127,  price:3.50  },
+  { name:"Apollousa, Bow of the Goddess",  type:"Link Monster",      id:48680970,  price:3.50  },
+  { name:"Dark Magician",                  type:"Normal Monster",    id:46986414,  price:3.50  },
+  { name:"Imperial Order",                 type:"Trap Card",         id:61740673,  price:3.00  },
+  { name:"Divine Arsenal AA-ZEUS",         type:"XYZ Monster",       id:90448279,  price:3.00  },
+  { name:"Droll & Lock Bird",              type:"Effect Monster",    id:94145683,  price:2.50  },
+  { name:"Borreload Savage Dragon",        type:"Synchro Monster",   id:28888669,  price:2.50  },
+  { name:"Red-Eyes Black Dragon",          type:"Normal Monster",    id:74677422,  price:2.50  },
+  { name:"Chaos Emperor Dragon",           type:"Effect Monster",    id:82301904,  price:2.00  },
+  { name:"Predaplant Verte Anaconda",      type:"Link Monster",      id:77235086,  price:2.00  },
+  { name:"Pot of Extravagance",            type:"Spell Card",        id:91998119,  price:2.00  },
+  { name:"Naturia Beast",                  type:"Synchro Monster",   id:28224070,  price:2.00  },
+  { name:"Spright Elf",                    type:"Link Monster",      id:91875359,  price:2.00  },
+  { name:"Pot of Desires",                 type:"Spell Card",        id:35261759,  price:1.50  },
+  { name:"Solemn Judgment",                type:"Counter Trap",      id:41420027,  price:1.50  },
+  { name:"Emergency Teleport",             type:"Spell Card",        id:67723438,  price:1.50  },
+  { name:"Gigantic Spright",               type:"XYZ Monster",       id:88521771,  price:1.50  },
+  { name:"Phantom Knights' Fog Blade",     type:"Trap Card",         id:25542642,  price:1.50  },
+  { name:"Eldlich the Golden Lord",        type:"Effect Monster",    id:95102327,  price:1.50  },
+  { name:"Witch of the Black Forest",      type:"Effect Monster",    id:78010363,  price:1.50  },
+  { name:"Jinzo",                          type:"Effect Monster",    id:77585513,  price:1.80  },
+  { name:"Black Luster Soldier — Envoy",   type:"Effect Monster",    id:72989439,  price:1.20  },
+  { name:"Ghost Ogre & Snow Rabbit",       type:"Tuner Monster",     id:59438930,  price:1.20  },
+  { name:"Dark Ruler No More",             type:"Spell Card",        id:86118074,  price:1.20  },
+  { name:"Toadally Awesome",               type:"XYZ Monster",       id:12307878,  price:1.00  },
+  { name:"Called by the Grave",            type:"Quick-Play Spell",  id:24224830,  price:1.00  },
+  { name:"Hieratic Seal of Heavenly Spheres", type:"Link Monster",   id:69065681,  price:1.00  },
+  { name:"Monster Reborn",                 type:"Spell Card",        id:83764718,  price:0.80  },
+  { name:"Sinister Serpent",               type:"Effect Monster",    id:8131171,   price:0.80  },
+  { name:"Solemn Strike",                  type:"Counter Trap",      id:40605147,  price:0.80  },
+  { name:"Ghost Belle & Haunted Mansion",  type:"Tuner Monster",     id:73642296,  price:0.80  },
+  { name:"Number S39: Utopia the Lightning",type:"XYZ Monster",      id:56832966,  price:0.80  },
+  { name:"Horus the Black Flame Dragon LV8",type:"Effect Monster",   id:48228899,  price:0.80  },
+  { name:"Vanity's Emptiness",             type:"Continuous Trap",   id:50078099,  price:0.80  },
+  { name:"There Can Be Only One",          type:"Continuous Trap",   id:44473213,  price:0.80  },
+  { name:"Sage with Eyes of Blue",         type:"Tuner Monster",     id:98745000,  price:0.80  },
+  { name:"The White Stone of Ancients",    type:"Tuner Monster",     id:78794994,  price:0.80  },
+  { name:"Mirror Force",                   type:"Normal Trap",       id:44095762,  price:0.60  },
+  { name:"Heavy Storm",                    type:"Spell Card",        id:19613556,  price:0.60  },
+  { name:"One for One",                    type:"Spell Card",        id:67748760,  price:0.60  },
+  { name:"Skill Drain",                    type:"Continuous Trap",   id:82732705,  price:0.60  },
+  { name:"Dimensional Barrier",            type:"Normal Trap",       id:83310433,  price:0.60  },
+  { name:"Solemn Warning",                 type:"Counter Trap",      id:84749824,  price:0.50  },
+  { name:"Effect Veiler",                  type:"Tuner Monster",     id:97268402,  price:0.50  },
+  { name:"Upstart Goblin",                 type:"Spell Card",        id:70368879,  price:0.50  },
+  { name:"Foolish Burial",                 type:"Spell Card",        id:81439173,  price:0.50  },
+  { name:"D.D. Crow",                      type:"Effect Monster",    id:24508238,  price:0.50  },
+  { name:"Mystic Mine",                    type:"Field Spell",       id:61613745,  price:0.50  },
+  { name:"Number 41: Bagooska",            type:"XYZ Monster",       id:38814750,  price:0.50  },
+  { name:"Red Reboot",                     type:"Counter Trap",      id:13578689,  price:0.50  },
+  { name:"Sangan",                         type:"Effect Monster",    id:26202165,  price:0.50  },
+  { name:"Premature Burial",               type:"Equip Spell",       id:70828912,  price:0.50  },
+  { name:"Gold Sarcophagus",               type:"Spell Card",        id:75500286,  price:0.50  },
+  { name:"Fossil Dyna Pachycephalo",        type:"Effect Monster",    id:42009836,  price:0.50  },
+  { name:"Knightmare Unicorn",             type:"Link Monster",      id:38342335,  price:0.50  },
+  { name:"Summon Limit",                   type:"Continuous Trap",   id:40054150,  price:0.50  },
+  { name:"Mekk-Knight Crusadia Avramax",   type:"Link Monster",      id:27551,     price:0.50  },
+  { name:"Salamangreat Almiraj",           type:"Link Monster",      id:75745352,  price:0.50  },
+  { name:"Number 39: Utopia",              type:"XYZ Monster",       id:84013237,  price:0.40  },
+  { name:"Abyss Dweller",                  type:"XYZ Monster",       id:84886738,  price:0.40  },
+  { name:"Gozen Match",                    type:"Continuous Trap",   id:58577036,  price:0.40  },
+  { name:"Zombie World",                   type:"Field Spell",       id:22320650,  price:0.40  },
+  { name:"Exciton Knight",                 type:"XYZ Monster",       id:37601374,  price:0.40  },
+  { name:"Thunder King Rai-Oh",            type:"Effect Monster",    id:71564252,  price:0.40  },
+  { name:"Morphing Jar",                   type:"Flip Monster",      id:33508719,  price:0.40  },
+  { name:"Cyber Dragon",                   type:"Effect Monster",    id:70095154,  price:0.40  },
+  { name:"Mudora the Sword Oracle",        type:"Effect Monster",    id:84012506,  price:0.40  },
+  { name:"Hand Destruction",               type:"Quick-Play Spell",  id:26385346,  price:0.40  },
+  { name:"Eradicator Epidemic Virus",      type:"Normal Trap",       id:40349894,  price:0.40  },
+  { name:"Anti-Spell Fragrance",           type:"Continuous Trap",   id:58921041,  price:0.40  },
+  { name:"Dugares the Timeless",           type:"XYZ Monster",       id:8279996,   price:0.40  },
+  { name:"Scareclaw Light-Heart",          type:"Link Monster",      id:41731100,  price:0.40  },
+  { name:"Tornado Dragon",                 type:"XYZ Monster",       id:6983839,   price:0.45  },
+  { name:"Terraforming",                   type:"Spell Card",        id:73628505,  price:0.30  },
+  { name:"Reinforcement of the Army",      type:"Spell Card",        id:30510505,  price:0.30  },
+  { name:"Steelswarm Roach",               type:"XYZ Monster",       id:5826408,   price:0.30  },
+  { name:"Rivalry of Warlords",            type:"Continuous Trap",   id:90846359,  price:0.30  },
+  { name:"Waking the Dragon",              type:"Normal Trap",       id:64681975,  price:0.30  },
+  { name:"Book of Moon",                   type:"Quick-Play Spell",  id:14087893,  price:0.30  },
+  { name:"Scapegoat",                      type:"Quick-Play Spell",  id:73915051,  price:0.30  },
+  { name:"Dragon Ravine",                  type:"Field Spell",       id:72868067,  price:0.30  },
+  { name:"Dragon's Mirror",                type:"Spell Card",        id:71490127,  price:0.30  },
+  { name:"Breaker the Magical Warrior",    type:"Effect Monster",    id:71413901,  price:0.30  },
+  { name:"Deck Devastation Virus",         type:"Normal Trap",       id:764861,    price:0.30  },
+  { name:"Armades, Keeper of Boundaries",  type:"Synchro Monster",   id:33689429,  price:0.30  },
+  { name:"Floowandereeze & Robina",        type:"Effect Monster",    id:73796571,  price:0.30  },
+  { name:"Linkuriboh",                     type:"Link Monster",      id:41999284,  price:0.30  },
+  { name:"Pots of Avarice",                type:"Spell Card",        id:67169062,  price:0.30  },
+  { name:"Limiter Removal",                type:"Quick-Play Spell",  id:23171610,  price:0.30  },
+  { name:"Full House",                     type:"Normal Trap",       id:21887785,  price:0.30  },
+  { name:"Duelittle Chimera",              type:"Link Monster",      id:98777036,  price:0.30  },
+  { name:"Void Ogre Dragon",               type:"Synchro Monster",   id:29970117,  price:0.40  },
+  { name:"Keldo the Sacred Protector",     type:"Effect Monster",    id:96847929,  price:0.35  },
+  { name:"Dark Hole",                      type:"Spell Card",        id:53129443,  price:0.25  },
+  { name:"Dragon Shrine",                  type:"Spell Card",        id:41764722,  price:0.25  },
+  { name:"Knightmare Phoenix",             type:"Link Monster",      id:2857636,   price:0.25  },
+  { name:"Gravity Bind",                   type:"Continuous Trap",   id:85742772,  price:0.25  },
+  { name:"Mystical Space Typhoon",         type:"Quick-Play Spell",  id:5318639,   price:0.20  },
+  { name:"Fissure",                        type:"Spell Card",        id:66947414,  price:0.20  },
+  { name:"Windwitch - Ice Bell",           type:"Tuner Monster",     id:17514802,  price:0.20  },
+].filter((c,i,a) => a.findIndex(x=>x.id===c.id)===i);
 
-// URL image depuis ygoprodeck (images publiques)
-function imgUrl(id) {
-  return `https://images.ygoprodeck.com/images/cards/${id}.jpg`;
-}
-function imgSmallUrl(id) {
-  return `https://images.ygoprodeck.com/images/cards_small/${id}.jpg`;
-}
-
-// Shuffle
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════ */
 function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length-1; i>0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════════════════════════
+function loadBg(bgEl, shimEl, card) {
+  shimEl.classList.remove('off');
+  bgEl.style.backgroundImage = '';
+
+  const tryImg = (url, fallback) => {
+    const img = new Image();
+    img.onload = () => {
+      bgEl.style.backgroundImage = `url('${url}')`;
+      shimEl.classList.add('off');
+    };
+    img.onerror = fallback;
+    img.src = url;
+  };
+
+  const small = `https://images.ygoprodeck.com/images/cards_small/${card.id}.jpg`;
+  const large = `https://images.ygoprodeck.com/images/cards/${card.id}.jpg`;
+
+  tryImg(small, () =>
+    tryImg(large, () => {
+      // Pas d'image: gradient de secours selon le type
+      const colors = {
+        'Spell Card':    ['#0a2e1a','#0d4a28'],
+        'Trap Card':     ['#2e0a1a','#4a0d2a'],
+        'XYZ Monster':   ['#0a0a0a','#1a1a2e'],
+        'Synchro Monster':['#1e1e1e','#2e2e2e'],
+        'Link Monster':  ['#0a1a2e','#0d2a4a'],
+        'Fusion Monster':['#1a0a2e','#2a0d4a'],
+      };
+      const [c1,c2] = colors[card.type] || ['#1a1a0a','#2e2e10'];
+      bgEl.style.backgroundImage = `linear-gradient(135deg, ${c1}, ${c2})`;
+      shimEl.classList.add('off');
+    })
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════ */
 const MAX_LIVES = 5;
-let deck = [];
+let deck = [], idx = 0;
 let G = {
-  score: 0, streak: 0,
-  best: +localStorage.getItem('ygo_v4_best') || 0,
-  lives: MAX_LIVES,
-  cardA: null, cardB: null,
-  answered: false,
-  roundIdx: 0,
+  score:0, streak:0,
+  best: +localStorage.getItem('ygo_v5_best')||0,
+  lives:MAX_LIVES,
+  cardA:null, cardB:null,
+  answered:false
 };
 
-// ═══════════════════════════════════════════════════════════════════
-//  UI
-// ═══════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
+   UI RENDER
+═══════════════════════════════════════════════════════════ */
 function renderHUD() {
-  document.getElementById('scoreEl').textContent  = G.score;
-  document.getElementById('streakEl').textContent = G.streak > 0 ? `${G.streak}🔥` : '0';
-  document.getElementById('bestEl').textContent   = G.best;
+  document.getElementById('sScore').textContent  = G.score;
+  document.getElementById('sStreak').textContent = G.streak>0?`${G.streak}🔥`:'0';
+  document.getElementById('sBest').textContent   = G.best;
 
-  const h = document.getElementById('heartsEl');
-  h.innerHTML = '';
-  for (let i = 0; i < MAX_LIVES; i++) {
-    const s = document.createElement('span');
-    s.className = 'heart' + (i >= G.lives ? ' dead' : '');
-    s.textContent = '♥';
-    h.appendChild(s);
+  // Lives
+  const livesEl = document.getElementById('lives');
+  livesEl.innerHTML = '';
+  for(let i=0;i<MAX_LIVES;i++){
+    const d=document.createElement('div');
+    d.className='life'+(i>=G.lives?' lost':'');
+    livesEl.appendChild(d);
   }
 
   // Progress
-  const pct = Math.min((G.roundIdx / deck.length) * 100, 100);
-  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progress-fill').style.width =
+    Math.min((idx/deck.length)*100,100)+'%';
 }
 
-function setImg(bgEl, shimEl, card) {
-  shimEl.classList.remove('gone');
-  bgEl.style.backgroundImage = '';
+function setPanel(which, card, showPrice) {
+  const suffix = which==='top' ? 'Top' : 'Bot';
+  loadBg(
+    document.getElementById('bg'+suffix),
+    document.getElementById('shim'+suffix),
+    card
+  );
+  document.getElementById('name'+suffix).textContent = card.name;
+  document.getElementById('type'+suffix).textContent = card.type;
 
-  // On tente d'abord la petite image, fallback grande
-  const small = imgSmallUrl(card.id);
-  const large = imgUrl(card.id);
-
-  const probe = new Image();
-  probe.onload = () => {
-    bgEl.style.backgroundImage = `url('${small}')`;
-    shimEl.classList.add('gone');
-  };
-  probe.onerror = () => {
-    // Fallback: grande image
-    const probe2 = new Image();
-    probe2.onload = () => {
-      bgEl.style.backgroundImage = `url('${large}')`;
-      shimEl.classList.add('gone');
-    };
-    probe2.onerror = () => {
-      // Pas d'image dispo : affiche placeholder coloré avec nom
-      bgEl.style.backgroundImage = '';
-      bgEl.style.background = `linear-gradient(135deg, #1a1a2e, #16213e)`;
-      shimEl.classList.add('gone');
-    };
-    probe2.src = large;
-  };
-  probe.src = small;
-}
-
-function setHalf(slot, card, showPrice) {
-  const bgEl    = document.getElementById(`bg${slot}`);
-  const shimEl  = document.getElementById(`shim${slot}`);
-  const nameEl  = document.getElementById(`name${slot}`);
-  const priceEl = document.getElementById(`price${slot}`);
-
-  nameEl.textContent = card.name;
-  setImg(bgEl, shimEl, card);
-
-  if (showPrice) {
-    priceEl.className = 'pb-val';
-    priceEl.textContent = `€${card.price.toFixed(2)}`;
+  const pEl = document.getElementById('price'+suffix);
+  if(showPrice){
+    pEl.className='pt-val';
+    pEl.textContent=`€${card.price.toFixed(2)}`;
   } else {
-    priceEl.className = 'pb-val secret';
-    priceEl.textContent = '?';
+    pEl.className='pt-val hidden';
+    pEl.textContent='?';
   }
 }
 
-function resetBtns() {
-  ['btnA','btnB'].forEach(id => {
-    const b = document.getElementById(id);
-    b.disabled = false;
-    b.className = 'btn-choice';
+function resetButtons(){
+  ['btnA','btnB'].forEach(id=>{
+    document.getElementById(id).disabled=false;
+    document.getElementById(id).className='btn-guess';
   });
 }
-function lockBtns() {
-  document.getElementById('btnA').disabled = true;
-  document.getElementById('btnB').disabled = true;
+
+let toastTimer;
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',3000);
 }
 
-let bannerTimer = null;
-function showBanner(msg, type) {
-  const el = document.getElementById('banner');
-  el.textContent = msg;
-  el.className = `result-banner show ${type}`;
-  clearTimeout(bannerTimer);
-  bannerTimer = setTimeout(() => { el.className = 'result-banner'; }, 2800);
-}
-
-// ═══════════════════════════════════════════════════════════════════
-//  GAME FLOW
-// ═══════════════════════════════════════════════════════════════════
-function pickCards() {
-  // Prend deux cartes consécutives dans le deck
-  // (le deck est shufflé, donc aléatoire)
-  if (G.roundIdx + 1 >= deck.length) {
-    // Plus de cartes → reshuffle
-    deck = shuffle(CARDS);
-    G.roundIdx = 0;
+/* ═══════════════════════════════════════════════════════════
+   PICK CARDS — ensure different prices
+═══════════════════════════════════════════════════════════ */
+function pick() {
+  if(idx+1>=deck.length){ deck=shuffle(CARDS); idx=0; }
+  let a=deck[idx], b=deck[idx+1];
+  let tries=0;
+  while(a.price===b.price && tries<12){
+    idx++;
+    if(idx+1>=deck.length){deck=shuffle(CARDS);idx=0;}
+    b=deck[idx+1]; tries++;
   }
-
-  // Évite les mêmes prix (trop facile/confusant)
-  let a = deck[G.roundIdx];
-  let b = deck[G.roundIdx + 1];
-
-  // Si prix identiques, chercher un autre B
-  let tries = 0;
-  while (a.price === b.price && tries < 10) {
-    G.roundIdx++;
-    if (G.roundIdx + 1 >= deck.length) { deck = shuffle(CARDS); G.roundIdx = 0; }
-    b = deck[G.roundIdx + 1];
-    tries++;
-  }
-
-  G.cardA = a;
-  G.cardB = b;
-  G.roundIdx += 2;
+  G.cardA=a; G.cardB=b;
+  idx+=2;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   NEXT ROUND
+═══════════════════════════════════════════════════════════ */
 function nextRound() {
-  G.answered = false;
-  document.getElementById('nextWrap').classList.remove('show');
-  resetBtns();
+  G.answered=false;
+  document.getElementById('next-btn').classList.remove('show');
+  resetButtons();
 
-  // Slide halfB down before loading
-  const halfB = document.getElementById('halfB');
-  halfB.classList.remove('in');
+  // Reset bot: slide it out
+  const bot=document.getElementById('panelBot');
+  bot.classList.remove('slide-in');
 
   // Reset shimmers
-  document.getElementById('shimA').classList.remove('gone');
-  document.getElementById('shimB').classList.remove('gone');
-  document.getElementById('bgA').style.backgroundImage = '';
-  document.getElementById('bgB').style.backgroundImage = '';
+  document.getElementById('shimTop').classList.remove('off');
+  document.getElementById('shimBot').classList.remove('off');
 
-  pickCards();
+  pick();
+  setPanel('top', G.cardA, true);
+  setPanel('bot', G.cardB, false);
 
-  setHalf('A', G.cardA, true);
-  setHalf('B', G.cardB, false);
-
-  // Slide B in after a tiny delay
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      halfB.classList.add('in');
-    });
-  });
+  // Slide in after 2 frames
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    bot.classList.add('slide-in');
+  }));
 
   renderHUD();
 }
 
+/* ═══════════════════════════════════════════════════════════
+   GUESS
+═══════════════════════════════════════════════════════════ */
 function guess(choice) {
-  if (G.answered) return;
-  G.answered = true;
-  lockBtns();
+  if(G.answered) return;
+  G.answered=true;
+  document.getElementById('btnA').disabled=true;
+  document.getElementById('btnB').disabled=true;
 
-  const pA = G.cardA.price;
-  const pB = G.cardB.price;
-  const correct = pA >= pB ? 'A' : 'B';
-  const ok = choice === correct;
+  const pA=G.cardA.price, pB=G.cardB.price;
+  const correct = pA>=pB ? 'A' : 'B';
+  const ok = choice===correct;
 
   // Reveal B price
-  const priceEl = document.getElementById('priceB');
-  priceEl.className = 'pb-val';
-  priceEl.textContent = `€${pB.toFixed(2)}`;
+  const pEl=document.getElementById('priceBot');
+  pEl.className='pt-val'; pEl.textContent=`€${pB.toFixed(2)}`;
 
-  // Colour buttons
-  document.getElementById(`btn${choice}`).className = 'btn-choice ' + (ok ? 'win' : 'lose');
-  if (!ok) document.getElementById(`btn${correct}`).className = 'btn-choice win';
+  // Color buttons
+  document.getElementById(`btn${choice}`).className='btn-guess '+(ok?'correct':'wrong');
+  if(!ok) document.getElementById(`btn${correct}`).className='btn-guess correct';
 
-  if (ok) {
-    G.score++;
-    G.streak++;
-    if (G.score > G.best) { G.best = G.score; localStorage.setItem('ygo_v4_best', G.best); }
-    const diff  = Math.abs(pA - pB).toFixed(2);
-    const xtra  = G.streak >= 3 ? ` · 🔥 ×${G.streak}` : '';
-    showBanner(`✓ EXACT !  diff €${diff}${xtra}`, 'ok');
+  if(ok){
+    G.score++; G.streak++;
+    if(G.score>G.best){G.best=G.score;localStorage.setItem('ygo_v5_best',G.best);}
+    const diff=Math.abs(pA-pB).toFixed(2);
+    const streak=G.streak>=3?` · 🔥 ×${G.streak}`:'';
+    showToast(`✓ Exact !  Diff €${diff}${streak}`,'ok');
   } else {
-    G.streak = 0;
-    G.lives--;
-    const winner = correct === 'A' ? G.cardA : G.cardB;
-    showBanner(`✗ Raté !  "${winner.name}" → €${Math.max(pA,pB).toFixed(2)}`, 'ko');
+    G.streak=0; G.lives--;
+    const winner=correct==='A'?G.cardA:G.cardB;
+    showToast(`✗ Raté !  ${winner.name} = €${Math.max(pA,pB).toFixed(2)}`,'ko');
   }
 
   renderHUD();
 
-  if (G.lives <= 0) {
-    setTimeout(gameOver, 1500);
-    return;
-  }
-  setTimeout(() => document.getElementById('nextWrap').classList.add('show'), 600);
+  if(G.lives<=0){ setTimeout(gameOver,1600); return; }
+  setTimeout(()=>document.getElementById('next-btn').classList.add('show'),700);
 }
 
-function gameOver() {
-  document.getElementById('goScore').textContent = G.score;
-  document.getElementById('goBest').textContent  = G.best;
-  document.getElementById('goScreen').classList.add('show');
+/* ═══════════════════════════════════════════════════════════
+   GAME OVER / RESTART
+═══════════════════════════════════════════════════════════ */
+function gameOver(){
+  document.getElementById('goScore').textContent=G.score;
+  document.getElementById('goBest').textContent=G.best;
+  document.getElementById('gameover').classList.add('show');
 }
-
-function restart() {
-  G.score = G.streak = 0;
-  G.lives = MAX_LIVES;
-  G.answered = false;
-  G.roundIdx = 0;
-  document.getElementById('goScreen').classList.remove('show');
-  deck = shuffle(CARDS);
+function restart(){
+  G.score=G.streak=0; G.lives=MAX_LIVES; G.answered=false; idx=0;
+  document.getElementById('gameover').classList.remove('show');
+  deck=shuffle(CARDS);
+  renderHUD();
   nextRound();
 }
 
-// ═══════════════════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════════════════
-deck = shuffle(CARDS);
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+deck=shuffle(CARDS);
+renderHUD();
 nextRound();
 </script>
 </body>
