@@ -11,14 +11,14 @@
 html, body {
   width: 100%; height: 100%;
   font-family: 'Nunito', sans-serif;
-  background: #111;
+  background: #0d0d14;
   overflow: hidden;
   color: #fff;
   user-select: none;
 }
 
 /* ══════════════════════════════════════════════
-   HEADER — logo + score
+   HEADER
 ══════════════════════════════════════════════ */
 #header {
   position: fixed;
@@ -28,31 +28,29 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  background: transparent;
-  pointer-events: none;
+  padding: 0 28px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
 .logo {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 900;
   letter-spacing: -0.01em;
   color: #fff;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-  pointer-events: all;
-}
-.logo span { color: #ffd166; }
-
-.score-badge {
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 999px;
-  padding: 6px 18px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  pointer-events: all;
+  gap: 8px;
+  cursor: pointer;
+}
+.logo-icon { font-size: 1.3rem; }
+.logo span { color: #ffd166; }
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 .score-item {
   display: flex;
@@ -61,268 +59,289 @@ html, body {
   line-height: 1;
 }
 .score-item .val {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 900;
   color: #ffd166;
 }
 .score-item .lbl {
-  font-size: 0.5rem;
+  font-size: 0.48rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.45);
-  margin-top: 1px;
-}
-.score-sep {
-  width: 1px; height: 24px;
-  background: rgba(255,255,255,0.15);
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.35);
+  margin-top: 2px;
 }
 
 /* ══════════════════════════════════════════════
-   LIVES
-══════════════════════════════════════════════ */
-#lives {
-  position: fixed;
-  bottom: 24px; left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  display: flex;
-  gap: 8px;
-  pointer-events: none;
-}
-.life {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 8px rgba(255,255,255,0.6);
-  transition: all 0.3s;
-}
-.life.lost {
-  background: rgba(255,255,255,0.18);
-  box-shadow: none;
-}
-
-/* ══════════════════════════════════════════════
-   GAME AREA — two full-screen halves
+   GAME LAYOUT — left | center | right  (like moreorless)
 ══════════════════════════════════════════════ */
 #game {
   position: fixed;
-  inset: 0;
+  inset: 56px 0 0 0;
+  display: flex;
+  flex-direction: row;
+}
+
+/* LEFT panel — card A (known price) */
+.panel {
+  flex: 1;
+  position: relative;
   display: flex;
   flex-direction: column;
-}
-
-/* Each card panel = 50% of screen height */
-.panel {
-  position: relative;
-  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
   overflow: hidden;
-  cursor: default;
 }
 
-/* Background image fills the panel */
 .panel-bg {
   position: absolute;
-  inset: -5%;  /* slight overscan for ken burns */
+  inset: 0;
   background-size: cover;
   background-position: center;
-  transition: transform 8s ease;
-  transform: scale(1.06);
-}
-.panel:hover .panel-bg {
-  transform: scale(1.0);
+  opacity: 0.12;
+  filter: blur(2px);
+  transition: opacity 0.5s;
 }
 
-/* Gradient so text is readable */
-.panel-top .panel-bg-grad {
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.08) 0%,
-    rgba(0,0,0,0.18) 40%,
-    rgba(0,0,0,0.72) 100%
-  );
-}
-.panel-bot .panel-bg-grad {
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.08) 0%,
-    rgba(0,0,0,0.18) 40%,
-    rgba(0,0,0,0.72) 100%
-  );
+/* Vertical divider */
+#divider {
+  width: 2px;
+  background: rgba(255,255,255,0.1);
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
-/* Card text info */
-.panel-content {
-  position: absolute;
-  left: 0; right: 0;
-  z-index: 5;
-  padding: 0 clamp(20px, 5vw, 60px);
+/* Card image circle */
+.card-circle {
+  width: clamp(130px, 18vw, 220px);
+  height: clamp(130px, 18vw, 220px);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,0.15);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  background: #1a1a2e;
+  position: relative;
+  flex-shrink: 0;
+  transition: transform 0.3s;
 }
-.panel-top .panel-content { bottom: 24px; }
-.panel-bot .panel-content { top: 24px; }
-
-.panel-eyebrow {
-  font-size: clamp(0.55rem, 1.4vw, 0.7rem);
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 4px;
+.card-circle:hover { transform: scale(1.04); }
+.card-circle img {
+  width: 100%;
+  height: 160%;
+  object-fit: cover;
+  object-position: top center;
+  margin-top: -10%;
 }
-.panel-name {
-  font-size: clamp(1.2rem, 3.5vw, 2rem);
-  font-weight: 900;
-  line-height: 1.1;
-  color: #fff;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.7);
-  max-width: 600px;
-}
-.panel-type {
-  font-size: clamp(0.65rem, 1.5vw, 0.8rem);
-  font-weight: 600;
-  color: rgba(255,255,255,0.4);
-  margin-top: 4px;
-  letter-spacing: 0.04em;
-}
-
-/* Price tag — big and bold like moreorless */
-.price-tag {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255,255,255,0.18);
-  border-radius: 16px;
-  padding: 10px 20px;
-  margin-top: 10px;
-  min-width: 120px;
-}
-.price-tag .pt-lbl {
-  font-size: 0.52rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
-}
-.price-tag .pt-val {
-  font-size: clamp(1.5rem, 4vw, 2.4rem);
-  font-weight: 900;
-  color: #ffd166;
-  line-height: 1;
-  margin-top: 2px;
-}
-.price-tag .pt-val.hidden {
-  color: rgba(255,255,255,0.2);
-  letter-spacing: 0.3em;
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
-}
-
-/* Shimmer overlay for loading */
-.shimmer {
+.card-circle .shimmer-circle {
   position: absolute;
   inset: 0;
-  z-index: 20;
-  background: linear-gradient(90deg, #1a1a1a 0%, #272727 50%, #1a1a1a 100%);
+  background: linear-gradient(90deg, #1a1a2e 0%, #2a2a4e 50%, #1a1a2e 100%);
   background-size: 200% 100%;
   animation: shim 1.3s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
-  opacity: 0.5;
+  font-size: 2.5rem;
 }
-.shimmer.off { display: none; }
+.card-circle .shimmer-circle.off { display: none; }
 @keyframes shim {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
 
-/* ══════════════════════════════════════════════
-   DIVIDER — center strip with buttons
-══════════════════════════════════════════════ */
-#divider {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0; right: 0;
-  z-index: 60;
-  height: 72px;
-  background: #111;
+/* Panel content below circle */
+.panel-info {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  margin-top: 20px;
+  padding: 0 20px;
+  text-align: center;
+  max-width: 320px;
 }
 
-.div-question {
-  font-size: clamp(0.65rem, 1.8vw, 0.85rem);
-  font-weight: 800;
-  letter-spacing: 0.12em;
+.panel-eyebrow {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 6px;
+}
+
+.panel-name {
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.panel-type {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 14px;
+  letter-spacing: 0.05em;
+}
+
+/* "is" text */
+.panel-is {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* Price display */
+.price-display {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.price-display.hidden {
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.3em;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.price-sub {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.3);
-  white-space: nowrap;
+  margin-top: 4px;
 }
 
-.btn-guess {
-  padding: 10px 22px;
-  border-radius: 999px;
-  border: 1.5px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.07);
-  color: #fff;
+/* ══════════════════════════════════════════════
+   RIGHT PANEL — buttons zone
+══════════════════════════════════════════════ */
+.panel-right-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-choice {
+  padding: 12px 28px;
+  border-radius: 6px;
+  border: none;
   font-family: 'Nunito', sans-serif;
-  font-size: clamp(0.72rem, 1.8vw, 0.85rem);
+  font-size: clamp(0.78rem, 1.6vw, 0.92rem);
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.15s;
-  white-space: nowrap;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-.btn-guess:hover:not(:disabled) {
-  background: rgba(255,209,102,0.18);
-  border-color: #ffd166;
-  color: #ffd166;
-  transform: scale(1.04);
+
+.btn-higher {
+  background: #e8344a;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(232,52,74,0.4);
 }
-.btn-guess:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
-.btn-guess.correct {
-  background: rgba(6,214,160,0.22);
-  border-color: #06d6a0;
-  color: #06d6a0;
+.btn-higher:hover:not(:disabled) {
+  background: #f04060;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(232,52,74,0.55);
 }
-.btn-guess.wrong {
-  background: rgba(239,35,60,0.18);
-  border-color: #ef233c;
-  color: #ef233c;
+
+.btn-lower {
+  background: #4a3de8;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(74,61,232,0.4);
+}
+.btn-lower:hover:not(:disabled) {
+  background: #6055f0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(74,61,232,0.55);
+}
+
+.btn-choice:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-choice.correct {
+  background: #06d6a0 !important;
+  box-shadow: 0 4px 20px rgba(6,214,160,0.5) !important;
+}
+.btn-choice.wrong {
+  background: #555 !important;
+  box-shadow: none !important;
+}
+
+/* VS center badge (on divider) */
+#vs-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  background: #0d0d14;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+  z-index: 20;
 }
 
 /* ══════════════════════════════════════════════
-   SLIDE-UP animation for bottom panel
+   LIVES (bottom center)
 ══════════════════════════════════════════════ */
-.panel-bot {
-  transform: translateY(100%);
-  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+#lives {
+  position: fixed;
+  bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  gap: 8px;
 }
-.panel-bot.slide-in {
-  transform: translateY(0);
+.life {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+  transition: all 0.3s;
+}
+.life.lost {
+  background: rgba(255,255,255,0.15);
+  box-shadow: none;
 }
 
 /* ══════════════════════════════════════════════
-   RESULT TOAST
+   TOAST
 ══════════════════════════════════════════════ */
 #toast {
   position: fixed;
   top: 68px; left: 50%;
   transform: translateX(-50%) translateY(-8px);
-  background: rgba(15,15,15,0.95);
+  background: rgba(10,10,20,0.95);
   backdrop-filter: blur(14px);
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 10px 22px;
-  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  font-size: 0.85rem;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -331,19 +350,17 @@ html, body {
   pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
   white-space: nowrap;
-  max-width: 90vw;
-  text-align: center;
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-#toast.ok { color: #06d6a0; border-color: rgba(6,214,160,0.35); }
-#toast.ko { color: #ef233c; border-color: rgba(239,35,60,0.3); }
+#toast.ok { color: #06d6a0; border-color: rgba(6,214,160,0.3); }
+#toast.ko { color: #ef233c; border-color: rgba(239,35,60,0.25); }
 
 /* ══════════════════════════════════════════════
    NEXT BUTTON
 ══════════════════════════════════════════════ */
 #next-btn {
   position: fixed;
-  bottom: 50px; left: 50%;
+  bottom: 48px; left: 50%;
   transform: translateX(-50%) translateY(12px);
   z-index: 150;
   opacity: 0;
@@ -356,11 +373,11 @@ html, body {
   transform: translateX(-50%) translateY(0);
 }
 #next-btn button {
-  padding: 14px 36px;
+  padding: 13px 34px;
   background: linear-gradient(135deg, #e8b84b, #ffd166);
   color: #111;
   font-family: 'Nunito', sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -368,26 +385,23 @@ html, body {
   border-radius: 999px;
   cursor: pointer;
   box-shadow: 0 4px 24px rgba(255,209,102,0.45);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s;
 }
-#next-btn button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 32px rgba(255,209,102,0.65);
-}
+#next-btn button:hover { transform: scale(1.06); }
 
 /* ══════════════════════════════════════════════
-   GAME OVER OVERLAY
+   GAME OVER
 ══════════════════════════════════════════════ */
 #gameover {
   position: fixed; inset: 0;
   z-index: 500;
-  background: rgba(10,10,10,0.96);
+  background: rgba(8,8,16,0.97);
   backdrop-filter: blur(20px);
   display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 22px;
   text-align: center;
   padding: 32px;
 }
@@ -398,7 +412,7 @@ html, body {
 }
 .go-emoji { font-size: 4rem; }
 .go-title {
-  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-size: clamp(3rem, 9vw, 6rem);
   font-weight: 900;
   color: #ef233c;
   letter-spacing: -0.02em;
@@ -406,19 +420,19 @@ html, body {
   line-height: 1;
 }
 .go-sub {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.3);
 }
 .go-cards {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px;
-  padding: 20px 32px;
+  border-radius: 18px;
+  padding: 20px 36px;
 }
 .go-card { text-align: center; }
 .go-card-v {
@@ -428,14 +442,14 @@ html, body {
   line-height: 1;
 }
 .go-card-l {
-  font-size: 0.55rem;
+  font-size: 0.52rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.3);
   margin-top: 4px;
 }
-.go-sep { width: 1px; background: rgba(255,255,255,0.1); }
+.go-sep { width: 1px; background: rgba(255,255,255,0.08); }
 .go-replay {
   padding: 14px 40px;
   background: linear-gradient(135deg, #e8b84b, #ffd166);
@@ -454,7 +468,7 @@ html, body {
 .go-replay:hover { transform: scale(1.05); }
 
 /* ══════════════════════════════════════════════
-   PROGRESS BAR (thin, bottom)
+   PROGRESS
 ══════════════════════════════════════════════ */
 #progress {
   position: fixed;
@@ -469,73 +483,87 @@ html, body {
   transition: width 0.5s ease;
   width: 0%;
 }
+
+/* Fade in panel */
+.panel-fade {
+  animation: fadeIn 0.5s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div id="header">
-  <div class="logo">⚡ <span>YGO</span> Price Duel</div>
-  <div class="score-badge">
+  <div class="logo">
+    <span class="logo-icon">⚡</span>
+    <span><span>YGO</span> Price Duel</span>
+  </div>
+  <div class="score-row">
     <div class="score-item">
-      <span class="val" id="sScore">0</span>
+      <span class="val" id="sHighscore">0</span>
+      <span class="lbl">Highscore</span>
+    </div>
+    <div class="score-item">
+      <span class="val" id="sScore" style="color:#ffd166">0</span>
       <span class="lbl">Score</span>
     </div>
-    <div class="score-sep"></div>
-    <div class="score-item">
-      <span class="val" id="sStreak" style="color:#f59e0b">0🔥</span>
-      <span class="lbl">Série</span>
-    </div>
-    <div class="score-sep"></div>
-    <div class="score-item">
-      <span class="val" id="sBest">0</span>
-      <span class="lbl">Record</span>
-    </div>
   </div>
 </div>
 
-<!-- GAME PANELS -->
+<!-- GAME -->
 <div id="game">
 
-  <!-- TOP PANEL = Carte A, prix visible -->
-  <div class="panel panel-top" id="panelTop">
-    <div class="shimmer" id="shimTop">🃏</div>
-    <div class="panel-bg" id="bgTop"></div>
-    <div class="panel-bg-grad"></div>
-    <div class="panel-content">
-      <div class="panel-eyebrow">Carte A · Prix connu</div>
-      <div class="panel-name" id="nameTop">—</div>
-      <div class="panel-type" id="typeTop"></div>
-      <div class="price-tag">
-        <div class="pt-lbl">Cardmarket</div>
-        <div class="pt-val" id="priceTop">—</div>
+  <!-- LEFT PANEL — Carte A (prix connu) -->
+  <div class="panel" id="panelLeft">
+    <div class="panel-bg" id="bgLeft"></div>
+    <div class="card-circle" id="circleLeft">
+      <div class="shimmer-circle" id="shimLeft">🃏</div>
+      <img id="imgLeft" src="" alt="" style="display:none">
+    </div>
+    <div class="panel-info">
+      <div class="panel-eyebrow">Carte A</div>
+      <div class="panel-name" id="nameLeft">—</div>
+      <div class="panel-type" id="typeLeft"></div>
+      <div class="panel-is">est à</div>
+      <div class="price-display" id="priceLeft">—</div>
+      <div class="price-sub">Cardmarket</div>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div id="divider">
+    <div id="vs-badge">VS</div>
+  </div>
+
+  <!-- RIGHT PANEL — Carte B (prix masqué, boutons) -->
+  <div class="panel" id="panelRight">
+    <div class="panel-bg" id="bgRight"></div>
+    <div class="card-circle" id="circleRight">
+      <div class="shimmer-circle" id="shimRight">🃏</div>
+      <img id="imgRight" src="" alt="" style="display:none">
+    </div>
+    <div class="panel-info">
+      <div class="panel-eyebrow">Carte B</div>
+      <div class="panel-name" id="nameRight">—</div>
+      <div class="panel-type" id="typeRight"></div>
+      <div class="panel-is">est</div>
+      <div class="price-display hidden" id="priceRight">?</div>
+      <div class="price-sub">Cardmarket</div>
+      <div class="panel-right-btns" id="btnZone">
+        <button class="btn-choice btn-higher" id="btnHigher" onclick="guess('higher')">
+          ↑ Plus chère
+        </button>
+        <button class="btn-choice btn-lower" id="btnLower" onclick="guess('lower')">
+          ↓ Moins chère
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- BOTTOM PANEL = Carte B, prix masqué -->
-  <div class="panel panel-bot" id="panelBot">
-    <div class="shimmer" id="shimBot">🃏</div>
-    <div class="panel-bg" id="bgBot"></div>
-    <div class="panel-bg-grad"></div>
-    <div class="panel-content">
-      <div class="panel-eyebrow">Carte B · Devinez le prix</div>
-      <div class="panel-name" id="nameBot">—</div>
-      <div class="panel-type" id="typeBot"></div>
-      <div class="price-tag">
-        <div class="pt-lbl">Cardmarket</div>
-        <div class="pt-val hidden" id="priceBot">?</div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- DIVIDER -->
-<div id="divider">
-  <div class="div-question">Laquelle est + chère ?</div>
-  <button class="btn-guess" id="btnA" onclick="guess('A')">▲ A plus chère</button>
-  <button class="btn-guess" id="btnB" onclick="guess('B')">▼ B plus chère</button>
 </div>
 
 <!-- LIVES -->
@@ -572,9 +600,7 @@ html, body {
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   DATASET — 120+ cartes YGO, IDs réels, prix Cardmarket (€)
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════ DATASET ═══════════════════════ */
 const CARDS = [
   { name:"Blue-Eyes White Dragon",         type:"Normal Monster",    id:89631139,  price:8.00  },
   { name:"Dark Magician",                  type:"Normal Monster",    id:46986414,  price:3.50  },
@@ -605,15 +631,12 @@ const CARDS = [
   { name:"I:P Masquerena",                 type:"Link Monster",      id:65741786,  price:4.00  },
   { name:"Fiber Jar",                      type:"Flip Monster",      id:78706415,  price:4.00  },
   { name:"Royal Tribute",                  type:"Trap Card",         id:72405967,  price:4.00  },
-  { name:"Return from the Different Dimension", type:"Trap Card",    id:27174286,  price:3.50  },
   { name:"Ash Blossom & Joyous Spring",    type:"Tuner Monster",     id:14558127,  price:3.50  },
   { name:"Apollousa, Bow of the Goddess",  type:"Link Monster",      id:48680970,  price:3.50  },
-  { name:"Dark Magician",                  type:"Normal Monster",    id:46986414,  price:3.50  },
   { name:"Imperial Order",                 type:"Trap Card",         id:61740673,  price:3.00  },
   { name:"Divine Arsenal AA-ZEUS",         type:"XYZ Monster",       id:90448279,  price:3.00  },
   { name:"Droll & Lock Bird",              type:"Effect Monster",    id:94145683,  price:2.50  },
   { name:"Borreload Savage Dragon",        type:"Synchro Monster",   id:28888669,  price:2.50  },
-  { name:"Red-Eyes Black Dragon",          type:"Normal Monster",    id:74677422,  price:2.50  },
   { name:"Chaos Emperor Dragon",           type:"Effect Monster",    id:82301904,  price:2.00  },
   { name:"Predaplant Verte Anaconda",      type:"Link Monster",      id:77235086,  price:2.00  },
   { name:"Pot of Extravagance",            type:"Spell Card",        id:91998119,  price:2.00  },
@@ -626,7 +649,6 @@ const CARDS = [
   { name:"Phantom Knights' Fog Blade",     type:"Trap Card",         id:25542642,  price:1.50  },
   { name:"Eldlich the Golden Lord",        type:"Effect Monster",    id:95102327,  price:1.50  },
   { name:"Witch of the Black Forest",      type:"Effect Monster",    id:78010363,  price:1.50  },
-  { name:"Jinzo",                          type:"Effect Monster",    id:77585513,  price:1.80  },
   { name:"Black Luster Soldier — Envoy",   type:"Effect Monster",    id:72989439,  price:1.20  },
   { name:"Ghost Ogre & Snow Rabbit",       type:"Tuner Monster",     id:59438930,  price:1.20  },
   { name:"Dark Ruler No More",             type:"Spell Card",        id:86118074,  price:1.20  },
@@ -637,12 +659,8 @@ const CARDS = [
   { name:"Sinister Serpent",               type:"Effect Monster",    id:8131171,   price:0.80  },
   { name:"Solemn Strike",                  type:"Counter Trap",      id:40605147,  price:0.80  },
   { name:"Ghost Belle & Haunted Mansion",  type:"Tuner Monster",     id:73642296,  price:0.80  },
-  { name:"Number S39: Utopia the Lightning",type:"XYZ Monster",      id:56832966,  price:0.80  },
-  { name:"Horus the Black Flame Dragon LV8",type:"Effect Monster",   id:48228899,  price:0.80  },
   { name:"Vanity's Emptiness",             type:"Continuous Trap",   id:50078099,  price:0.80  },
   { name:"There Can Be Only One",          type:"Continuous Trap",   id:44473213,  price:0.80  },
-  { name:"Sage with Eyes of Blue",         type:"Tuner Monster",     id:98745000,  price:0.80  },
-  { name:"The White Stone of Ancients",    type:"Tuner Monster",     id:78794994,  price:0.80  },
   { name:"Mirror Force",                   type:"Normal Trap",       id:44095762,  price:0.60  },
   { name:"Heavy Storm",                    type:"Spell Card",        id:19613556,  price:0.60  },
   { name:"One for One",                    type:"Spell Card",        id:67748760,  price:0.60  },
@@ -652,128 +670,68 @@ const CARDS = [
   { name:"Effect Veiler",                  type:"Tuner Monster",     id:97268402,  price:0.50  },
   { name:"Upstart Goblin",                 type:"Spell Card",        id:70368879,  price:0.50  },
   { name:"Foolish Burial",                 type:"Spell Card",        id:81439173,  price:0.50  },
-  { name:"D.D. Crow",                      type:"Effect Monster",    id:24508238,  price:0.50  },
   { name:"Mystic Mine",                    type:"Field Spell",       id:61613745,  price:0.50  },
   { name:"Number 41: Bagooska",            type:"XYZ Monster",       id:38814750,  price:0.50  },
   { name:"Red Reboot",                     type:"Counter Trap",      id:13578689,  price:0.50  },
   { name:"Sangan",                         type:"Effect Monster",    id:26202165,  price:0.50  },
-  { name:"Premature Burial",               type:"Equip Spell",       id:70828912,  price:0.50  },
-  { name:"Gold Sarcophagus",               type:"Spell Card",        id:75500286,  price:0.50  },
-  { name:"Fossil Dyna Pachycephalo",        type:"Effect Monster",    id:42009836,  price:0.50  },
   { name:"Knightmare Unicorn",             type:"Link Monster",      id:38342335,  price:0.50  },
-  { name:"Summon Limit",                   type:"Continuous Trap",   id:40054150,  price:0.50  },
-  { name:"Mekk-Knight Crusadia Avramax",   type:"Link Monster",      id:27551,     price:0.50  },
-  { name:"Salamangreat Almiraj",           type:"Link Monster",      id:75745352,  price:0.50  },
-  { name:"Number 39: Utopia",              type:"XYZ Monster",       id:84013237,  price:0.40  },
-  { name:"Abyss Dweller",                  type:"XYZ Monster",       id:84886738,  price:0.40  },
-  { name:"Gozen Match",                    type:"Continuous Trap",   id:58577036,  price:0.40  },
-  { name:"Zombie World",                   type:"Field Spell",       id:22320650,  price:0.40  },
-  { name:"Exciton Knight",                 type:"XYZ Monster",       id:37601374,  price:0.40  },
-  { name:"Thunder King Rai-Oh",            type:"Effect Monster",    id:71564252,  price:0.40  },
-  { name:"Morphing Jar",                   type:"Flip Monster",      id:33508719,  price:0.40  },
-  { name:"Cyber Dragon",                   type:"Effect Monster",    id:70095154,  price:0.40  },
-  { name:"Mudora the Sword Oracle",        type:"Effect Monster",    id:84012506,  price:0.40  },
-  { name:"Hand Destruction",               type:"Quick-Play Spell",  id:26385346,  price:0.40  },
-  { name:"Eradicator Epidemic Virus",      type:"Normal Trap",       id:40349894,  price:0.40  },
-  { name:"Anti-Spell Fragrance",           type:"Continuous Trap",   id:58921041,  price:0.40  },
-  { name:"Dugares the Timeless",           type:"XYZ Monster",       id:8279996,   price:0.40  },
-  { name:"Scareclaw Light-Heart",          type:"Link Monster",      id:41731100,  price:0.40  },
-  { name:"Tornado Dragon",                 type:"XYZ Monster",       id:6983839,   price:0.45  },
   { name:"Terraforming",                   type:"Spell Card",        id:73628505,  price:0.30  },
-  { name:"Reinforcement of the Army",      type:"Spell Card",        id:30510505,  price:0.30  },
-  { name:"Steelswarm Roach",               type:"XYZ Monster",       id:5826408,   price:0.30  },
-  { name:"Rivalry of Warlords",            type:"Continuous Trap",   id:90846359,  price:0.30  },
-  { name:"Waking the Dragon",              type:"Normal Trap",       id:64681975,  price:0.30  },
   { name:"Book of Moon",                   type:"Quick-Play Spell",  id:14087893,  price:0.30  },
-  { name:"Scapegoat",                      type:"Quick-Play Spell",  id:73915051,  price:0.30  },
   { name:"Dragon Ravine",                  type:"Field Spell",       id:72868067,  price:0.30  },
-  { name:"Dragon's Mirror",                type:"Spell Card",        id:71490127,  price:0.30  },
-  { name:"Breaker the Magical Warrior",    type:"Effect Monster",    id:71413901,  price:0.30  },
-  { name:"Deck Devastation Virus",         type:"Normal Trap",       id:764861,    price:0.30  },
-  { name:"Armades, Keeper of Boundaries",  type:"Synchro Monster",   id:33689429,  price:0.30  },
   { name:"Floowandereeze & Robina",        type:"Effect Monster",    id:73796571,  price:0.30  },
   { name:"Linkuriboh",                     type:"Link Monster",      id:41999284,  price:0.30  },
-  { name:"Pots of Avarice",                type:"Spell Card",        id:67169062,  price:0.30  },
-  { name:"Limiter Removal",                type:"Quick-Play Spell",  id:23171610,  price:0.30  },
-  { name:"Full House",                     type:"Normal Trap",       id:21887785,  price:0.30  },
-  { name:"Duelittle Chimera",              type:"Link Monster",      id:98777036,  price:0.30  },
-  { name:"Void Ogre Dragon",               type:"Synchro Monster",   id:29970117,  price:0.40  },
-  { name:"Keldo the Sacred Protector",     type:"Effect Monster",    id:96847929,  price:0.35  },
   { name:"Dark Hole",                      type:"Spell Card",        id:53129443,  price:0.25  },
-  { name:"Dragon Shrine",                  type:"Spell Card",        id:41764722,  price:0.25  },
   { name:"Knightmare Phoenix",             type:"Link Monster",      id:2857636,   price:0.25  },
-  { name:"Gravity Bind",                   type:"Continuous Trap",   id:85742772,  price:0.25  },
   { name:"Mystical Space Typhoon",         type:"Quick-Play Spell",  id:5318639,   price:0.20  },
-  { name:"Fissure",                        type:"Spell Card",        id:66947414,  price:0.20  },
-  { name:"Windwitch - Ice Bell",           type:"Tuner Monster",     id:17514802,  price:0.20  },
 ].filter((c,i,a) => a.findIndex(x=>x.id===c.id)===i);
 
-/* ═══════════════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════ HELPERS ═══════════════════════ */
 function shuffle(arr) {
   const a=[...arr];
   for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
 
-function loadBg(bgEl, shimEl, card) {
+function loadCardImage(imgEl, shimEl, card) {
   shimEl.classList.remove('off');
-  bgEl.style.backgroundImage = '';
+  imgEl.style.display = 'none';
 
-  const tryImg = (url, fallback) => {
-    const img = new Image();
-    img.onload = () => {
-      bgEl.style.backgroundImage = `url('${url}')`;
+  const tryUrl = (url, fallback) => {
+    const i = new Image();
+    i.onload = () => {
+      imgEl.src = url;
+      imgEl.style.display = 'block';
       shimEl.classList.add('off');
     };
-    img.onerror = fallback;
-    img.src = url;
+    i.onerror = fallback;
+    i.src = url;
   };
 
   const small = `https://images.ygoprodeck.com/images/cards_small/${card.id}.jpg`;
   const large = `https://images.ygoprodeck.com/images/cards/${card.id}.jpg`;
 
-  tryImg(small, () =>
-    tryImg(large, () => {
-      // Pas d'image: gradient de secours selon le type
-      const colors = {
-        'Spell Card':    ['#0a2e1a','#0d4a28'],
-        'Trap Card':     ['#2e0a1a','#4a0d2a'],
-        'XYZ Monster':   ['#0a0a0a','#1a1a2e'],
-        'Synchro Monster':['#1e1e1e','#2e2e2e'],
-        'Link Monster':  ['#0a1a2e','#0d2a4a'],
-        'Fusion Monster':['#1a0a2e','#2a0d4a'],
-      };
-      const [c1,c2] = colors[card.type] || ['#1a1a0a','#2e2e10'];
-      bgEl.style.backgroundImage = `linear-gradient(135deg, ${c1}, ${c2})`;
+  tryUrl(small, () =>
+    tryUrl(large, () => {
+      shimEl.textContent = '🃏';
       shimEl.classList.add('off');
+      shimEl.style.animation = 'none';
+      shimEl.style.background = '#1a1a2e';
+      shimEl.style.display = 'flex';
     })
   );
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════ STATE ═══════════════════════ */
 const MAX_LIVES = 5;
 let deck = [], idx = 0;
-let G = {
-  score:0, streak:0,
-  best: +localStorage.getItem('ygo_v5_best')||0,
-  lives:MAX_LIVES,
-  cardA:null, cardB:null,
-  answered:false
-};
+let best = +localStorage.getItem('ygo_moreorless_best') || 0;
+let G = { score:0, streak:0, lives:MAX_LIVES, cardA:null, cardB:null, answered:false };
 
-/* ═══════════════════════════════════════════════════════════
-   UI RENDER
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════ RENDER ═══════════════════════ */
 function renderHUD() {
-  document.getElementById('sScore').textContent  = G.score;
-  document.getElementById('sStreak').textContent = G.streak>0?`${G.streak}🔥`:'0';
-  document.getElementById('sBest').textContent   = G.best;
+  document.getElementById('sScore').textContent = G.score;
+  document.getElementById('sHighscore').textContent = best;
 
-  // Lives
   const livesEl = document.getElementById('lives');
   livesEl.innerHTML = '';
   for(let i=0;i<MAX_LIVES;i++){
@@ -782,36 +740,38 @@ function renderHUD() {
     livesEl.appendChild(d);
   }
 
-  // Progress
-  document.getElementById('progress-fill').style.width =
-    Math.min((idx/deck.length)*100,100)+'%';
+  document.getElementById('progress-fill').style.width = Math.min((idx/deck.length)*100,100)+'%';
 }
 
-function setPanel(which, card, showPrice) {
-  const suffix = which==='top' ? 'Top' : 'Bot';
-  loadBg(
-    document.getElementById('bg'+suffix),
-    document.getElementById('shim'+suffix),
+function setPanel(side, card, showPrice) {
+  const cap = side === 'left' ? 'Left' : 'Right';
+  loadCardImage(
+    document.getElementById('img'+cap),
+    document.getElementById('shim'+cap),
     card
   );
-  document.getElementById('name'+suffix).textContent = card.name;
-  document.getElementById('type'+suffix).textContent = card.type;
+  // bg blur
+  document.getElementById('bg'+cap).style.backgroundImage =
+    `url('https://images.ygoprodeck.com/images/cards_small/${card.id}.jpg')`;
 
-  const pEl = document.getElementById('price'+suffix);
+  document.getElementById('name'+cap).textContent = card.name;
+  document.getElementById('type'+cap).textContent = card.type;
+
+  const pEl = document.getElementById('price'+cap);
   if(showPrice){
-    pEl.className='pt-val';
-    pEl.textContent=`€${card.price.toFixed(2)}`;
+    pEl.className = 'price-display';
+    pEl.textContent = `€${card.price.toFixed(2)}`;
   } else {
-    pEl.className='pt-val hidden';
-    pEl.textContent='?';
+    pEl.className = 'price-display hidden';
+    pEl.textContent = '?';
   }
 }
 
 function resetButtons(){
-  ['btnA','btnB'].forEach(id=>{
-    document.getElementById(id).disabled=false;
-    document.getElementById(id).className='btn-guess';
-  });
+  document.getElementById('btnHigher').disabled = false;
+  document.getElementById('btnLower').disabled = false;
+  document.getElementById('btnHigher').className = 'btn-choice btn-higher';
+  document.getElementById('btnLower').className = 'btn-choice btn-lower';
 }
 
 let toastTimer;
@@ -819,12 +779,10 @@ function showToast(msg,type){
   const t=document.getElementById('toast');
   t.textContent=msg; t.className=`show ${type}`;
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.className='',3000);
+  toastTimer=setTimeout(()=>t.className='',3200);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PICK CARDS — ensure different prices
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════ PICK ═══════════════════════ */
 function pick() {
   if(idx+1>=deck.length){ deck=shuffle(CARDS); idx=0; }
   let a=deck[idx], b=deck[idx+1];
@@ -838,93 +796,92 @@ function pick() {
   idx+=2;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   NEXT ROUND
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════ ROUND ═══════════════════════ */
 function nextRound() {
-  G.answered=false;
+  G.answered = false;
   document.getElementById('next-btn').classList.remove('show');
   resetButtons();
 
-  // Reset bot: slide it out
-  const bot=document.getElementById('panelBot');
-  bot.classList.remove('slide-in');
-
-  // Reset shimmers
-  document.getElementById('shimTop').classList.remove('off');
-  document.getElementById('shimBot').classList.remove('off');
-
   pick();
-  setPanel('top', G.cardA, true);
-  setPanel('bot', G.cardB, false);
 
-  // Slide in after 2 frames
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    bot.classList.add('slide-in');
-  }));
+  // Animate panels
+  document.getElementById('panelLeft').classList.remove('panel-fade');
+  document.getElementById('panelRight').classList.remove('panel-fade');
+  void document.getElementById('panelLeft').offsetWidth;
+  document.getElementById('panelLeft').classList.add('panel-fade');
+  document.getElementById('panelRight').classList.add('panel-fade');
+
+  setPanel('left', G.cardA, true);
+  setPanel('right', G.cardB, false);
 
   renderHUD();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   GUESS
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════ GUESS ═══════════════════════ */
 function guess(choice) {
   if(G.answered) return;
-  G.answered=true;
-  document.getElementById('btnA').disabled=true;
-  document.getElementById('btnB').disabled=true;
+  G.answered = true;
 
-  const pA=G.cardA.price, pB=G.cardB.price;
-  const correct = pA>=pB ? 'A' : 'B';
-  const ok = choice===correct;
+  document.getElementById('btnHigher').disabled = true;
+  document.getElementById('btnLower').disabled = true;
+
+  const pA = G.cardA.price, pB = G.cardB.price;
+  // "higher" = B is more expensive than A
+  const correctChoice = pB > pA ? 'higher' : 'lower';
+  const ok = choice === correctChoice;
 
   // Reveal B price
-  const pEl=document.getElementById('priceBot');
-  pEl.className='pt-val'; pEl.textContent=`€${pB.toFixed(2)}`;
+  const pEl = document.getElementById('priceRight');
+  pEl.className = 'price-display';
+  pEl.textContent = `€${pB.toFixed(2)}`;
 
-  // Color buttons
-  document.getElementById(`btn${choice}`).className='btn-guess '+(ok?'correct':'wrong');
-  if(!ok) document.getElementById(`btn${correct}`).className='btn-guess correct';
+  // Button feedback
+  const btnH = document.getElementById('btnHigher');
+  const btnL = document.getElementById('btnLower');
+
+  if(choice === 'higher'){
+    btnH.className = 'btn-choice ' + (ok ? 'correct' : 'wrong');
+    if(!ok) btnL.className = 'btn-choice correct';
+  } else {
+    btnL.className = 'btn-choice ' + (ok ? 'correct' : 'wrong');
+    if(!ok) btnH.className = 'btn-choice correct';
+  }
 
   if(ok){
     G.score++; G.streak++;
-    if(G.score>G.best){G.best=G.score;localStorage.setItem('ygo_v5_best',G.best);}
-    const diff=Math.abs(pA-pB).toFixed(2);
-    const streak=G.streak>=3?` · 🔥 ×${G.streak}`:'';
-    showToast(`✓ Exact !  Diff €${diff}${streak}`,'ok');
+    if(G.score > best){ best = G.score; localStorage.setItem('ygo_moreorless_best', best); }
+    const diff = Math.abs(pA-pB).toFixed(2);
+    const s = G.streak >= 3 ? ` · 🔥 ×${G.streak}` : '';
+    showToast(`✓ Correct !  Diff €${diff}${s}`, 'ok');
   } else {
-    G.streak=0; G.lives--;
-    const winner=correct==='A'?G.cardA:G.cardB;
-    showToast(`✗ Raté !  ${winner.name} = €${Math.max(pA,pB).toFixed(2)}`,'ko');
+    G.streak = 0; G.lives--;
+    const expensive = pA > pB ? G.cardA : G.cardB;
+    showToast(`✗ Raté !  ${expensive.name} = €${Math.max(pA,pB).toFixed(2)}`, 'ko');
   }
 
   renderHUD();
 
-  if(G.lives<=0){ setTimeout(gameOver,1600); return; }
-  setTimeout(()=>document.getElementById('next-btn').classList.add('show'),700);
+  if(G.lives <= 0){ setTimeout(gameOver, 1700); return; }
+  setTimeout(() => document.getElementById('next-btn').classList.add('show'), 800);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   GAME OVER / RESTART
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════ GAME OVER ═══════════════════════ */
 function gameOver(){
-  document.getElementById('goScore').textContent=G.score;
-  document.getElementById('goBest').textContent=G.best;
+  document.getElementById('goScore').textContent = G.score;
+  document.getElementById('goBest').textContent = best;
   document.getElementById('gameover').classList.add('show');
 }
+
 function restart(){
-  G.score=G.streak=0; G.lives=MAX_LIVES; G.answered=false; idx=0;
+  G.score = G.streak = 0; G.lives = MAX_LIVES; G.answered = false; idx = 0;
   document.getElementById('gameover').classList.remove('show');
-  deck=shuffle(CARDS);
+  deck = shuffle(CARDS);
   renderHUD();
   nextRound();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════════════ */
-deck=shuffle(CARDS);
+/* ═══════════════════════ INIT ═══════════════════════ */
+deck = shuffle(CARDS);
 renderHUD();
 nextRound();
 </script>
