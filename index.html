@@ -17,72 +17,63 @@ html, body {
   user-select: none;
 }
 
-/* ══════════════════════════════════════════════
-   HEADER
-══════════════════════════════════════════════ */
 #header {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 56px;
+  height: 54px;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
-  background: rgba(0,0,0,0.45);
+  padding: 0 24px;
+  background: rgba(5,5,12,0.9);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .logo {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 900;
-  letter-spacing: -0.01em;
   color: #fff;
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
 }
-.logo-icon { font-size: 1.3rem; }
-.logo span { color: #ffd166; }
+.logo em { color: #ffd166; font-style: normal; }
 
-.score-row {
+.hud {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
-.score-item {
+.hud-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   line-height: 1;
 }
-.score-item .val {
+.hud-val {
   font-size: 1.1rem;
   font-weight: 900;
   color: #ffd166;
 }
-.score-item .lbl {
-  font-size: 0.48rem;
+.hud-lbl {
+  font-size: 0.44rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.3);
   margin-top: 2px;
 }
 
-/* ══════════════════════════════════════════════
-   GAME LAYOUT — left | center | right  (like moreorless)
-══════════════════════════════════════════════ */
+/* ══ MAIN LAYOUT ══ */
 #game {
   position: fixed;
-  inset: 56px 0 0 0;
+  top: 54px; left: 0; right: 0; bottom: 0;
   display: flex;
   flex-direction: row;
 }
 
-/* LEFT panel — card A (known price) */
 .panel {
   flex: 1;
   position: relative;
@@ -90,228 +81,209 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0;
   overflow: hidden;
 }
 
 .panel-bg {
   position: absolute;
-  inset: 0;
+  inset: -20px;
   background-size: cover;
   background-position: center;
-  opacity: 0.12;
-  filter: blur(2px);
-  transition: opacity 0.5s;
+  opacity: 0.08;
+  filter: blur(24px);
+  pointer-events: none;
 }
 
-/* Vertical divider */
 #divider {
   width: 2px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
   position: relative;
+  flex-shrink: 0;
   z-index: 10;
-  flex-shrink: 0;
 }
-
-/* Card image circle */
-.card-circle {
-  width: clamp(130px, 18vw, 220px);
-  height: clamp(130px, 18vw, 220px);
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid rgba(255,255,255,0.15);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-  background: #1a1a2e;
-  position: relative;
-  flex-shrink: 0;
-  transition: transform 0.3s;
-}
-.card-circle:hover { transform: scale(1.04); }
-.card-circle img {
-  width: 100%;
-  height: 160%;
-  object-fit: cover;
-  object-position: top center;
-  margin-top: -10%;
-}
-.card-circle .shimmer-circle {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, #1a1a2e 0%, #2a2a4e 50%, #1a1a2e 100%);
-  background-size: 200% 100%;
-  animation: shim 1.3s ease infinite;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-}
-.card-circle .shimmer-circle.off { display: none; }
-@keyframes shim {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
-}
-
-/* Panel content below circle */
-.panel-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-  padding: 0 20px;
-  text-align: center;
-  max-width: 320px;
-}
-
-.panel-eyebrow {
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-  margin-bottom: 6px;
-}
-
-.panel-name {
-  font-size: clamp(1rem, 2.2vw, 1.5rem);
-  font-weight: 900;
-  color: #fff;
-  line-height: 1.15;
-  margin-bottom: 4px;
-}
-
-.panel-type {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.35);
-  margin-bottom: 14px;
-  letter-spacing: 0.05em;
-}
-
-/* "is" text */
-.panel-is {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.35);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-/* Price display */
-.price-display {
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 900;
-  color: #fff;
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-.price-display.hidden {
-  color: rgba(255,255,255,0.2);
-  letter-spacing: 0.3em;
-  font-size: clamp(1.4rem, 3vw, 2rem);
-}
-
-.price-sub {
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
-  margin-top: 4px;
-}
-
-/* ══════════════════════════════════════════════
-   RIGHT PANEL — buttons zone
-══════════════════════════════════════════════ */
-.panel-right-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.btn-choice {
-  padding: 12px 28px;
-  border-radius: 6px;
-  border: none;
-  font-family: 'Nunito', sans-serif;
-  font-size: clamp(0.78rem, 1.6vw, 0.92rem);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.15s;
-  min-width: 160px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn-higher {
-  background: #e8344a;
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(232,52,74,0.4);
-}
-.btn-higher:hover:not(:disabled) {
-  background: #f04060;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(232,52,74,0.55);
-}
-
-.btn-lower {
-  background: #4a3de8;
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(74,61,232,0.4);
-}
-.btn-lower:hover:not(:disabled) {
-  background: #6055f0;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(74,61,232,0.55);
-}
-
-.btn-choice:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.btn-choice.correct {
-  background: #06d6a0 !important;
-  box-shadow: 0 4px 20px rgba(6,214,160,0.5) !important;
-}
-.btn-choice.wrong {
-  background: #555 !important;
-  box-shadow: none !important;
-}
-
-/* VS center badge (on divider) */
 #vs-badge {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 48px;
-  height: 48px;
-  background: #0d0d14;
-  border: 2px solid rgba(255,255,255,0.15);
+  width: 44px; height: 44px;
   border-radius: 50%;
+  background: #0d0d14;
+  border: 2px solid rgba(255,255,255,0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 900;
   letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.4);
-  z-index: 20;
+  color: rgba(255,255,255,0.35);
 }
 
-/* ══════════════════════════════════════════════
-   LIVES (bottom center)
-══════════════════════════════════════════════ */
+/* ══ CARD IMAGE ══ */
+.card-wrap {
+  width: clamp(130px, 17vw, 210px);
+  height: clamp(130px, 17vw, 210px);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,0.14);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+  background: #1a1a2e;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* YGO card images: art is in the top ~55% of the card. 
+   We show 175% height offset to crop into the art zone. */
+.card-wrap img {
+  position: absolute;
+  top: -15%;
+  left: 0;
+  width: 100%;
+  height: 175%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.card-wrap .spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  background: linear-gradient(135deg, #12122a, #1e1e40);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.card-wrap .spinner.gone { display: none; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
+
+/* ══ PANEL INFO ══ */
+.panel-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 16px;
+  padding: 0 12px;
+  max-width: 290px;
+}
+
+.eyebrow {
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 6px;
+}
+
+.card-name {
+  font-size: clamp(0.88rem, 1.9vw, 1.3rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 3px;
+}
+
+.card-type {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+.is-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.28);
+  margin-bottom: 4px;
+}
+
+.price-val {
+  font-size: clamp(1.7rem, 3.8vw, 2.8rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.price-val.hidden {
+  color: rgba(255,255,255,0.18);
+  letter-spacing: 0.35em;
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+}
+
+.price-source {
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.22);
+  margin-top: 4px;
+}
+
+/* ══ BUTTONS ══ */
+.btn-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.btn-guess {
+  padding: 11px 24px;
+  border-radius: 8px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(0.72rem, 1.4vw, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 154px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-higher {
+  background: #c93046;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(201,48,70,0.5);
+}
+.btn-higher:hover:not(:disabled) {
+  background: #e03a55;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(201,48,70,0.65);
+}
+
+.btn-lower {
+  background: #3a47d4;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(58,71,212,0.5);
+}
+.btn-lower:hover:not(:disabled) {
+  background: #4d5ae8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(58,71,212,0.65);
+}
+
+.btn-guess:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.btn-guess.correct  { background: #06d6a0 !important; box-shadow: 0 4px 18px rgba(6,214,160,0.5) !important; }
+.btn-guess.wrong    { background: #383838 !important; box-shadow: none !important; opacity:0.6; }
+
+/* ══ LIVES ══ */
 #lives {
   position: fixed;
-  bottom: 20px; left: 50%;
+  bottom: 18px; left: 50%;
   transform: translateX(-50%);
   z-index: 100;
   display: flex;
@@ -321,27 +293,22 @@ html, body {
   width: 9px; height: 9px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+  box-shadow: 0 0 7px rgba(255,255,255,0.5);
   transition: all 0.3s;
 }
-.life.lost {
-  background: rgba(255,255,255,0.15);
-  box-shadow: none;
-}
+.life.lost { background: rgba(255,255,255,0.12); box-shadow: none; }
 
-/* ══════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════ */
+/* ══ TOAST ══ */
 #toast {
   position: fixed;
-  top: 68px; left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background: rgba(10,10,20,0.95);
+  top: 66px; left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: rgba(8,8,18,0.96);
   backdrop-filter: blur(14px);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   padding: 10px 22px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -350,18 +317,18 @@ html, body {
   pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
   white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #toast.ok { color: #06d6a0; border-color: rgba(6,214,160,0.3); }
 #toast.ko { color: #ef233c; border-color: rgba(239,35,60,0.25); }
 
-/* ══════════════════════════════════════════════
-   NEXT BUTTON
-══════════════════════════════════════════════ */
+/* ══ NEXT BUTTON ══ */
 #next-btn {
   position: fixed;
-  bottom: 48px; left: 50%;
-  transform: translateX(-50%) translateY(12px);
+  bottom: 44px; left: 50%;
+  transform: translateX(-50%) translateY(14px);
   z-index: 150;
   opacity: 0;
   pointer-events: none;
@@ -377,7 +344,7 @@ html, body {
   background: linear-gradient(135deg, #e8b84b, #ffd166);
   color: #111;
   font-family: 'Nunito', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -389,13 +356,26 @@ html, body {
 }
 #next-btn button:hover { transform: scale(1.06); }
 
-/* ══════════════════════════════════════════════
-   GAME OVER
-══════════════════════════════════════════════ */
+/* ══ PROGRESS ══ */
+#progress {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.05);
+  z-index: 90;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e8b84b, #ffd166);
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+/* ══ GAME OVER ══ */
 #gameover {
   position: fixed; inset: 0;
   z-index: 500;
-  background: rgba(8,8,16,0.97);
+  background: rgba(5,5,12,0.97);
   backdrop-filter: blur(20px);
   display: none;
   flex-direction: column;
@@ -406,27 +386,25 @@ html, body {
   padding: 32px;
 }
 #gameover.show { display: flex; animation: goIn 0.4s ease; }
-@keyframes goIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
-}
-.go-emoji { font-size: 4rem; }
+@keyframes goIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+
+.go-emoji { font-size: 3.5rem; }
 .go-title {
-  font-size: clamp(3rem, 9vw, 6rem);
+  font-size: clamp(3rem, 8vw, 5.5rem);
   font-weight: 900;
   color: #ef233c;
   letter-spacing: -0.02em;
-  filter: drop-shadow(0 0 30px rgba(239,35,60,0.5));
+  filter: drop-shadow(0 0 28px rgba(239,35,60,0.45));
   line-height: 1;
 }
 .go-sub {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.28);
 }
-.go-cards {
+.go-stats {
   display: flex;
   gap: 24px;
   background: rgba(255,255,255,0.04);
@@ -434,19 +412,19 @@ html, body {
   border-radius: 18px;
   padding: 20px 36px;
 }
-.go-card { text-align: center; }
-.go-card-v {
+.go-stat { text-align: center; }
+.go-stat-v {
   font-size: 2.5rem;
   font-weight: 900;
   color: #ffd166;
   line-height: 1;
 }
-.go-card-l {
-  font-size: 0.52rem;
+.go-stat-l {
+  font-size: 0.5rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.28);
   margin-top: 4px;
 }
 .go-sep { width: 1px; background: rgba(255,255,255,0.08); }
@@ -466,422 +444,362 @@ html, body {
   transition: transform 0.15s;
 }
 .go-replay:hover { transform: scale(1.05); }
-
-/* ══════════════════════════════════════════════
-   PROGRESS
-══════════════════════════════════════════════ */
-#progress {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: rgba(255,255,255,0.06);
-  z-index: 90;
-}
-#progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #e8b84b, #ffd166);
-  transition: width 0.5s ease;
-  width: 0%;
-}
-
-/* Fade in panel */
-.panel-fade {
-  animation: fadeIn 0.5s ease;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
-}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div id="header">
-  <div class="logo">
-    <span class="logo-icon">⚡</span>
-    <span><span>YGO</span> Price Duel</span>
-  </div>
-  <div class="score-row">
-    <div class="score-item">
-      <span class="val" id="sHighscore">0</span>
-      <span class="lbl">Highscore</span>
+  <div class="logo">⚡ <em>YGO</em> Price Duel</div>
+  <div class="hud">
+    <div class="hud-item">
+      <span class="hud-val" id="hRecord">0</span>
+      <span class="hud-lbl">Record</span>
     </div>
-    <div class="score-item">
-      <span class="val" id="sScore" style="color:#ffd166">0</span>
-      <span class="lbl">Score</span>
+    <div class="hud-item">
+      <span class="hud-val" id="hScore">0</span>
+      <span class="hud-lbl">Score</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-val" id="hStreak" style="color:#f59e0b">0🔥</span>
+      <span class="hud-lbl">Série</span>
     </div>
   </div>
 </div>
 
-<!-- GAME -->
 <div id="game">
 
-  <!-- LEFT PANEL — Carte A (prix connu) -->
-  <div class="panel" id="panelLeft">
-    <div class="panel-bg" id="bgLeft"></div>
-    <div class="card-circle" id="circleLeft">
-      <div class="shimmer-circle" id="shimLeft">🃏</div>
-      <img id="imgLeft" src="" alt="" style="display:none">
+  <!-- LEFT: carte A, prix connu -->
+  <div class="panel" id="panelA">
+    <div class="panel-bg" id="bgA"></div>
+    <div class="card-wrap">
+      <img id="imgA" src="" alt="">
+      <div class="spinner" id="spinA">🃏</div>
     </div>
     <div class="panel-info">
-      <div class="panel-eyebrow">Carte A</div>
-      <div class="panel-name" id="nameLeft">—</div>
-      <div class="panel-type" id="typeLeft"></div>
-      <div class="panel-is">est à</div>
-      <div class="price-display" id="priceLeft">—</div>
-      <div class="price-sub">Cardmarket</div>
+      <div class="eyebrow">Carte A · Prix connu</div>
+      <div class="card-name" id="nameA">—</div>
+      <div class="card-type" id="typeA"></div>
+      <div class="is-label">vaut</div>
+      <div class="price-val" id="priceA">—</div>
+      <div class="price-source">Cardmarket</div>
     </div>
   </div>
 
-  <!-- DIVIDER -->
-  <div id="divider">
-    <div id="vs-badge">VS</div>
-  </div>
+  <div id="divider"><div id="vs-badge">VS</div></div>
 
-  <!-- RIGHT PANEL — Carte B (prix masqué, boutons) -->
-  <div class="panel" id="panelRight">
-    <div class="panel-bg" id="bgRight"></div>
-    <div class="card-circle" id="circleRight">
-      <div class="shimmer-circle" id="shimRight">🃏</div>
-      <img id="imgRight" src="" alt="" style="display:none">
+  <!-- RIGHT: carte B, prix masqué + boutons -->
+  <div class="panel" id="panelB">
+    <div class="panel-bg" id="bgB"></div>
+    <div class="card-wrap">
+      <img id="imgB" src="" alt="">
+      <div class="spinner" id="spinB">🃏</div>
     </div>
     <div class="panel-info">
-      <div class="panel-eyebrow">Carte B</div>
-      <div class="panel-name" id="nameRight">—</div>
-      <div class="panel-type" id="typeRight"></div>
-      <div class="panel-is">est</div>
-      <div class="price-display hidden" id="priceRight">?</div>
-      <div class="price-sub">Cardmarket</div>
-      <div class="panel-right-btns" id="btnZone">
-        <button class="btn-choice btn-higher" id="btnHigher" onclick="guess('higher')">
-          ↑ Plus chère
-        </button>
-        <button class="btn-choice btn-lower" id="btnLower" onclick="guess('lower')">
-          ↓ Moins chère
-        </button>
+      <div class="eyebrow">Carte B · Devinez</div>
+      <div class="card-name" id="nameB">—</div>
+      <div class="card-type" id="typeB"></div>
+      <div class="is-label">est</div>
+      <div class="price-val hidden" id="priceB">?</div>
+      <div class="price-source">Cardmarket</div>
+      <div class="btn-zone">
+        <button class="btn-guess btn-higher" id="btnH" onclick="guess('higher')">↑ Plus chère que A</button>
+        <button class="btn-guess btn-lower"  id="btnL" onclick="guess('lower')">↓ Moins chère que A</button>
       </div>
     </div>
   </div>
 
 </div>
 
-<!-- LIVES -->
 <div id="lives"></div>
-
-<!-- TOAST -->
 <div id="toast"></div>
-
-<!-- NEXT -->
-<div id="next-btn">
-  <button onclick="nextRound()">Carte suivante →</button>
-</div>
-
-<!-- PROGRESS -->
+<div id="next-btn"><button onclick="nextRound()">Carte suivante →</button></div>
 <div id="progress"><div id="progress-fill"></div></div>
 
-<!-- GAME OVER -->
 <div id="gameover">
   <div class="go-emoji">💀</div>
-  <div class="go-title">Défaite</div>
+  <div class="go-title">Game Over</div>
   <div class="go-sub">Tu as épuisé tes vies</div>
-  <div class="go-cards">
-    <div class="go-card">
-      <div class="go-card-v" id="goScore">0</div>
-      <div class="go-card-l">Score final</div>
+  <div class="go-stats">
+    <div class="go-stat">
+      <div class="go-stat-v" id="goScore">0</div>
+      <div class="go-stat-l">Score final</div>
     </div>
     <div class="go-sep"></div>
-    <div class="go-card">
-      <div class="go-card-v" id="goBest">0</div>
-      <div class="go-card-l">Record</div>
+    <div class="go-stat">
+      <div class="go-stat-v" id="goBest">0</div>
+      <div class="go-stat-l">Record</div>
     </div>
   </div>
   <button class="go-replay" onclick="restart()">↩ Rejouer</button>
 </div>
 
 <script>
-/* ═══════════════════════ DATASET ═══════════════════════ */
+/* ═══ DATASET ═══ */
 const CARDS = [
-  { name:"Blue-Eyes White Dragon",         type:"Normal Monster",    id:89631139,  price:8.00  },
-  { name:"Dark Magician",                  type:"Normal Monster",    id:46986414,  price:3.50  },
-  { name:"Exodia the Forbidden One",       type:"Normal Monster",    id:33396948,  price:12.00 },
-  { name:"Red-Eyes Black Dragon",          type:"Normal Monster",    id:74677422,  price:2.50  },
-  { name:"Jinzo",                          type:"Effect Monster",    id:77585513,  price:1.80  },
-  { name:"Pot of Greed",                   type:"Spell Card",        id:55144522,  price:5.00  },
-  { name:"Graceful Charity",               type:"Spell Card",        id:79571449,  price:15.00 },
-  { name:"Delinquent Duo",                 type:"Spell Card",        id:44763025,  price:20.00 },
-  { name:"Maxx \"C\"",                    type:"Effect Monster",    id:23434538,  price:25.00 },
-  { name:"Baronne de Fleur",               type:"Synchro Monster",   id:84815190,  price:15.00 },
-  { name:"Accesscode Talker",              type:"Link Monster",      id:86066372,  price:10.00 },
-  { name:"Painful Choice",                 type:"Spell Card",        id:74191942,  price:12.00 },
-  { name:"Sixth Sense",                    type:"Trap Card",         id:30809794,  price:8.00  },
-  { name:"Forbidden Droplet",              type:"Spell Card",        id:62265044,  price:8.00  },
-  { name:"Pot of Prosperity",              type:"Spell Card",        id:1337177,   price:7.00  },
-  { name:"Appointer of the Red Lotus",     type:"Trap Card",         id:33092842,  price:7.00  },
-  { name:"Harpie's Feather Duster",        type:"Spell Card",        id:18144506,  price:6.00  },
-  { name:"Lightning Storm",                type:"Spell Card",        id:56273280,  price:6.00  },
-  { name:"Crystron Halqifibrax",           type:"Link Monster",      id:50588353,  price:6.00  },
-  { name:"Raigeki",                        type:"Spell Card",        id:12580477,  price:3.00  },
-  { name:"Triple Tactics Talent",          type:"Spell Card",        id:49772895,  price:5.50  },
-  { name:"Nibiru, the Primal Being",       type:"Effect Monster",    id:27204311,  price:5.00  },
-  { name:"Tearlaments Kitkallos",          type:"Fusion Monster",    id:21887175,  price:5.00  },
-  { name:"True King of All Calamities",    type:"XYZ Monster",       id:60963917,  price:4.00  },
-  { name:"Infinite Impermanence",          type:"Trap Card",         id:10045474,  price:4.00  },
-  { name:"Crossout Designator",            type:"Spell Card",        id:65681432,  price:4.00  },
-  { name:"I:P Masquerena",                 type:"Link Monster",      id:65741786,  price:4.00  },
-  { name:"Fiber Jar",                      type:"Flip Monster",      id:78706415,  price:4.00  },
-  { name:"Royal Tribute",                  type:"Trap Card",         id:72405967,  price:4.00  },
-  { name:"Ash Blossom & Joyous Spring",    type:"Tuner Monster",     id:14558127,  price:3.50  },
-  { name:"Apollousa, Bow of the Goddess",  type:"Link Monster",      id:48680970,  price:3.50  },
-  { name:"Imperial Order",                 type:"Trap Card",         id:61740673,  price:3.00  },
-  { name:"Divine Arsenal AA-ZEUS",         type:"XYZ Monster",       id:90448279,  price:3.00  },
-  { name:"Droll & Lock Bird",              type:"Effect Monster",    id:94145683,  price:2.50  },
-  { name:"Borreload Savage Dragon",        type:"Synchro Monster",   id:28888669,  price:2.50  },
-  { name:"Chaos Emperor Dragon",           type:"Effect Monster",    id:82301904,  price:2.00  },
-  { name:"Predaplant Verte Anaconda",      type:"Link Monster",      id:77235086,  price:2.00  },
-  { name:"Pot of Extravagance",            type:"Spell Card",        id:91998119,  price:2.00  },
-  { name:"Naturia Beast",                  type:"Synchro Monster",   id:28224070,  price:2.00  },
-  { name:"Spright Elf",                    type:"Link Monster",      id:91875359,  price:2.00  },
-  { name:"Pot of Desires",                 type:"Spell Card",        id:35261759,  price:1.50  },
-  { name:"Solemn Judgment",                type:"Counter Trap",      id:41420027,  price:1.50  },
-  { name:"Emergency Teleport",             type:"Spell Card",        id:67723438,  price:1.50  },
-  { name:"Gigantic Spright",               type:"XYZ Monster",       id:88521771,  price:1.50  },
-  { name:"Phantom Knights' Fog Blade",     type:"Trap Card",         id:25542642,  price:1.50  },
-  { name:"Eldlich the Golden Lord",        type:"Effect Monster",    id:95102327,  price:1.50  },
-  { name:"Witch of the Black Forest",      type:"Effect Monster",    id:78010363,  price:1.50  },
-  { name:"Black Luster Soldier — Envoy",   type:"Effect Monster",    id:72989439,  price:1.20  },
-  { name:"Ghost Ogre & Snow Rabbit",       type:"Tuner Monster",     id:59438930,  price:1.20  },
-  { name:"Dark Ruler No More",             type:"Spell Card",        id:86118074,  price:1.20  },
-  { name:"Toadally Awesome",               type:"XYZ Monster",       id:12307878,  price:1.00  },
-  { name:"Called by the Grave",            type:"Quick-Play Spell",  id:24224830,  price:1.00  },
-  { name:"Hieratic Seal of Heavenly Spheres", type:"Link Monster",   id:69065681,  price:1.00  },
-  { name:"Monster Reborn",                 type:"Spell Card",        id:83764718,  price:0.80  },
-  { name:"Sinister Serpent",               type:"Effect Monster",    id:8131171,   price:0.80  },
-  { name:"Solemn Strike",                  type:"Counter Trap",      id:40605147,  price:0.80  },
-  { name:"Ghost Belle & Haunted Mansion",  type:"Tuner Monster",     id:73642296,  price:0.80  },
-  { name:"Vanity's Emptiness",             type:"Continuous Trap",   id:50078099,  price:0.80  },
-  { name:"There Can Be Only One",          type:"Continuous Trap",   id:44473213,  price:0.80  },
-  { name:"Mirror Force",                   type:"Normal Trap",       id:44095762,  price:0.60  },
-  { name:"Heavy Storm",                    type:"Spell Card",        id:19613556,  price:0.60  },
-  { name:"One for One",                    type:"Spell Card",        id:67748760,  price:0.60  },
-  { name:"Skill Drain",                    type:"Continuous Trap",   id:82732705,  price:0.60  },
-  { name:"Dimensional Barrier",            type:"Normal Trap",       id:83310433,  price:0.60  },
-  { name:"Solemn Warning",                 type:"Counter Trap",      id:84749824,  price:0.50  },
-  { name:"Effect Veiler",                  type:"Tuner Monster",     id:97268402,  price:0.50  },
-  { name:"Upstart Goblin",                 type:"Spell Card",        id:70368879,  price:0.50  },
-  { name:"Foolish Burial",                 type:"Spell Card",        id:81439173,  price:0.50  },
-  { name:"Mystic Mine",                    type:"Field Spell",       id:61613745,  price:0.50  },
-  { name:"Number 41: Bagooska",            type:"XYZ Monster",       id:38814750,  price:0.50  },
-  { name:"Red Reboot",                     type:"Counter Trap",      id:13578689,  price:0.50  },
-  { name:"Sangan",                         type:"Effect Monster",    id:26202165,  price:0.50  },
-  { name:"Knightmare Unicorn",             type:"Link Monster",      id:38342335,  price:0.50  },
-  { name:"Terraforming",                   type:"Spell Card",        id:73628505,  price:0.30  },
-  { name:"Book of Moon",                   type:"Quick-Play Spell",  id:14087893,  price:0.30  },
-  { name:"Dragon Ravine",                  type:"Field Spell",       id:72868067,  price:0.30  },
-  { name:"Floowandereeze & Robina",        type:"Effect Monster",    id:73796571,  price:0.30  },
-  { name:"Linkuriboh",                     type:"Link Monster",      id:41999284,  price:0.30  },
-  { name:"Dark Hole",                      type:"Spell Card",        id:53129443,  price:0.25  },
-  { name:"Knightmare Phoenix",             type:"Link Monster",      id:2857636,   price:0.25  },
-  { name:"Mystical Space Typhoon",         type:"Quick-Play Spell",  id:5318639,   price:0.20  },
-].filter((c,i,a) => a.findIndex(x=>x.id===c.id)===i);
+  { name:"Maxx \"C\"",                      type:"Effect Monster",      id:23434538, price:25.00 },
+  { name:"Graceful Charity",                 type:"Spell Card",           id:79571449, price:15.00 },
+  { name:"Baronne de Fleur",                 type:"Synchro Monster",      id:84815190, price:15.00 },
+  { name:"Exodia the Forbidden One",         type:"Effect Monster",       id:33396948, price:12.00 },
+  { name:"Painful Choice",                   type:"Spell Card",           id:74191942, price:12.00 },
+  { name:"Accesscode Talker",                type:"Link Monster",         id:86066372, price:10.00 },
+  { name:"Blue-Eyes White Dragon",           type:"Normal Monster",       id:89631139, price:8.00  },
+  { name:"Sixth Sense",                      type:"Trap Card",            id:30809794, price:8.00  },
+  { name:"Forbidden Droplet",                type:"Spell Card",           id:62265044, price:8.00  },
+  { name:"Delinquent Duo",                   type:"Spell Card",           id:44763025, price:7.50  },
+  { name:"Pot of Prosperity",                type:"Spell Card",           id:1337177,  price:7.00  },
+  { name:"Harpie's Feather Duster",          type:"Spell Card",           id:18144506, price:6.00  },
+  { name:"Lightning Storm",                  type:"Spell Card",           id:56273280, price:6.00  },
+  { name:"Crystron Halqifibrax",             type:"Link Monster",         id:50588353, price:6.00  },
+  { name:"Triple Tactics Talent",            type:"Spell Card",           id:49772895, price:5.50  },
+  { name:"Pot of Greed",                     type:"Spell Card",           id:55144522, price:5.00  },
+  { name:"Nibiru, the Primal Being",         type:"Effect Monster",       id:27204311, price:5.00  },
+  { name:"Tearlaments Kitkallos",            type:"Fusion Monster",       id:21887175, price:5.00  },
+  { name:"Infinite Impermanence",            type:"Trap Card",            id:10045474, price:4.50  },
+  { name:"Crossout Designator",              type:"Spell Card",           id:65681432, price:4.00  },
+  { name:"I:P Masquerena",                   type:"Link Monster",         id:65741786, price:4.00  },
+  { name:"True King of All Calamities",      type:"XYZ Monster",          id:60963917, price:4.00  },
+  { name:"Ash Blossom & Joyous Spring",      type:"Tuner Monster",        id:14558127, price:3.50  },
+  { name:"Dark Magician",                    type:"Normal Monster",       id:46986414, price:3.50  },
+  { name:"Apollousa, Bow of the Goddess",    type:"Link Monster",         id:48680970, price:3.50  },
+  { name:"Raigeki",                          type:"Spell Card",           id:12580477, price:3.00  },
+  { name:"Imperial Order",                   type:"Trap Card",            id:61740673, price:3.00  },
+  { name:"Divine Arsenal AA-ZEUS",           type:"XYZ Monster",          id:90448279, price:3.00  },
+  { name:"Red-Eyes Black Dragon",            type:"Normal Monster",       id:74677422, price:2.50  },
+  { name:"Droll & Lock Bird",                type:"Effect Monster",       id:94145683, price:2.50  },
+  { name:"Borreload Savage Dragon",          type:"Synchro Monster",      id:28888669, price:2.50  },
+  { name:"Chaos Emperor Dragon",             type:"Effect Monster",       id:82301904, price:2.00  },
+  { name:"Predaplant Verte Anaconda",        type:"Link Monster",         id:77235086, price:2.00  },
+  { name:"Pot of Extravagance",              type:"Spell Card",           id:91998119, price:2.00  },
+  { name:"Spright Elf",                      type:"Link Monster",         id:91875359, price:2.00  },
+  { name:"Jinzo",                            type:"Effect Monster",       id:77585513, price:1.80  },
+  { name:"Pot of Desires",                   type:"Spell Card",           id:35261759, price:1.50  },
+  { name:"Solemn Judgment",                  type:"Counter Trap",         id:41420027, price:1.50  },
+  { name:"Eldlich the Golden Lord",          type:"Effect Monster",       id:95102327, price:1.50  },
+  { name:"Gigantic Spright",                 type:"XYZ Monster",          id:88521771, price:1.50  },
+  { name:"Black Luster Soldier - Envoy",     type:"Effect Monster",       id:72989439, price:1.20  },
+  { name:"Ghost Ogre & Snow Rabbit",         type:"Tuner Monster",        id:59438930, price:1.20  },
+  { name:"Toadally Awesome",                 type:"XYZ Monster",          id:12307878, price:1.00  },
+  { name:"Hieratic Seal of Heavenly Spheres",type:"Link Monster",         id:69065681, price:1.00  },
+  { name:"Monster Reborn",                   type:"Spell Card",           id:83764718, price:0.80  },
+  { name:"Solemn Strike",                    type:"Counter Trap",         id:40605147, price:0.80  },
+  { name:"Vanity's Emptiness",               type:"Continuous Trap",      id:50078099, price:0.80  },
+  { name:"Dimensional Barrier",              type:"Normal Trap",          id:83310433, price:0.70  },
+  { name:"Skill Drain",                      type:"Continuous Trap",      id:82732705, price:0.60  },
+  { name:"Mirror Force",                     type:"Normal Trap",          id:44095762, price:0.60  },
+  { name:"Effect Veiler",                    type:"Tuner Monster",        id:97268402, price:0.50  },
+  { name:"Solemn Warning",                   type:"Counter Trap",         id:84749824, price:0.50  },
+  { name:"Number 41: Bagooska",              type:"XYZ Monster",          id:38814750, price:0.50  },
+  { name:"Knightmare Unicorn",               type:"Link Monster",         id:38342335, price:0.50  },
+  { name:"Foolish Burial",                   type:"Spell Card",           id:81439173, price:0.45  },
+  { name:"Abyss Dweller",                    type:"XYZ Monster",          id:84886738, price:0.40  },
+  { name:"Thunder King Rai-Oh",              type:"Effect Monster",       id:71564252, price:0.40  },
+  { name:"Cyber Dragon",                     type:"Effect Monster",       id:70095154, price:0.40  },
+  { name:"Book of Moon",                     type:"Quick-Play Spell",     id:14087893, price:0.30  },
+  { name:"Dark Hole",                        type:"Spell Card",           id:53129443, price:0.25  },
+  { name:"Mystical Space Typhoon",           type:"Quick-Play Spell",     id:5318639,  price:0.20  },
+];
 
-/* ═══════════════════════ HELPERS ═══════════════════════ */
-function shuffle(arr) {
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}
-  return a;
+const DECK_BASE = CARDS.filter((c,i,a) => a.findIndex(x=>x.id===c.id)===i);
+
+/* ═══ HELPERS ═══ */
+function shuffle(a) {
+  const b = [...a];
+  for(let i=b.length-1;i>0;i--){
+    const j=Math.random()*(i+1)|0;
+    [b[i],b[j]]=[b[j],b[i]];
+  }
+  return b;
 }
 
-function loadCardImage(imgEl, shimEl, card) {
-  shimEl.classList.remove('off');
-  imgEl.style.display = 'none';
+/* Load image with small → large fallback.
+   The <img> tag already exists in the DOM.
+   We show spinner until loaded. */
+function loadImg(side, id) {
+  const img  = document.getElementById('img'  + side);
+  const spin = document.getElementById('spin' + side);
+  const bg   = document.getElementById('bg'   + side);
 
-  const tryUrl = (url, fallback) => {
-    const i = new Image();
-    i.onload = () => {
-      imgEl.src = url;
-      imgEl.style.display = 'block';
-      shimEl.classList.add('off');
+  // Reset
+  img.style.opacity = '0';
+  spin.classList.remove('gone');
+
+  const small = `https://images.ygoprodeck.com/images/cards_small/${id}.jpg`;
+  const large = `https://images.ygoprodeck.com/images/cards/${id}.jpg`;
+
+  function tryUrl(url, fallback) {
+    const tmp = new Image();
+    tmp.onload = () => {
+      img.src = url;
+      img.style.opacity = '1';
+      spin.classList.add('gone');
+      bg.style.backgroundImage = `url('${url}')`;
     };
-    i.onerror = fallback;
-    i.src = url;
-  };
+    tmp.onerror = fallback;
+    tmp.src = url;
+  }
 
-  const small = `https://images.ygoprodeck.com/images/cards_small/${card.id}.jpg`;
-  const large = `https://images.ygoprodeck.com/images/cards/${card.id}.jpg`;
-
-  tryUrl(small, () =>
-    tryUrl(large, () => {
-      shimEl.textContent = '🃏';
-      shimEl.classList.add('off');
-      shimEl.style.animation = 'none';
-      shimEl.style.background = '#1a1a2e';
-      shimEl.style.display = 'flex';
-    })
-  );
+  tryUrl(small, () => tryUrl(large, () => {
+    // No image available — just hide spinner, show emoji
+    spin.textContent = '🃏';
+    spin.style.animation = 'none';
+    spin.classList.remove('gone');
+  }));
 }
 
-/* ═══════════════════════ STATE ═══════════════════════ */
+/* ═══ STATE ═══ */
 const MAX_LIVES = 5;
-let deck = [], idx = 0;
-let best = +localStorage.getItem('ygo_moreorless_best') || 0;
-let G = { score:0, streak:0, lives:MAX_LIVES, cardA:null, cardB:null, answered:false };
+let best = +localStorage.getItem('ygo_best_v7') || 0;
+let deck = [], ptr = 0;
+let cardA, cardB;
+let score = 0, streak = 0, lives = MAX_LIVES;
+let answered = false;
 
-/* ═══════════════════════ RENDER ═══════════════════════ */
+/* ═══ HUD ═══ */
 function renderHUD() {
-  document.getElementById('sScore').textContent = G.score;
-  document.getElementById('sHighscore').textContent = best;
+  document.getElementById('hScore').textContent  = score;
+  document.getElementById('hRecord').textContent = best;
+  document.getElementById('hStreak').textContent = streak > 0 ? `${streak}🔥` : '0';
 
   const livesEl = document.getElementById('lives');
   livesEl.innerHTML = '';
-  for(let i=0;i<MAX_LIVES;i++){
-    const d=document.createElement('div');
-    d.className='life'+(i>=G.lives?' lost':'');
+  for(let i = 0; i < MAX_LIVES; i++){
+    const d = document.createElement('div');
+    d.className = 'life' + (i >= lives ? ' lost' : '');
     livesEl.appendChild(d);
   }
 
-  document.getElementById('progress-fill').style.width = Math.min((idx/deck.length)*100,100)+'%';
+  document.getElementById('progress-fill').style.width =
+    Math.min((ptr / deck.length) * 100, 100) + '%';
 }
 
+/* ═══ PANEL ═══ */
 function setPanel(side, card, showPrice) {
-  const cap = side === 'left' ? 'Left' : 'Right';
-  loadCardImage(
-    document.getElementById('img'+cap),
-    document.getElementById('shim'+cap),
-    card
-  );
-  // bg blur
-  document.getElementById('bg'+cap).style.backgroundImage =
-    `url('https://images.ygoprodeck.com/images/cards_small/${card.id}.jpg')`;
+  loadImg(side, card.id);
+  document.getElementById('name' + side).textContent = card.name;
+  document.getElementById('type' + side).textContent = card.type;
 
-  document.getElementById('name'+cap).textContent = card.name;
-  document.getElementById('type'+cap).textContent = card.type;
-
-  const pEl = document.getElementById('price'+cap);
-  if(showPrice){
-    pEl.className = 'price-display';
+  const pEl = document.getElementById('price' + side);
+  if(showPrice) {
+    pEl.className = 'price-val';
     pEl.textContent = `€${card.price.toFixed(2)}`;
   } else {
-    pEl.className = 'price-display hidden';
+    pEl.className = 'price-val hidden';
     pEl.textContent = '?';
   }
 }
 
-function resetButtons(){
-  document.getElementById('btnHigher').disabled = false;
-  document.getElementById('btnLower').disabled = false;
-  document.getElementById('btnHigher').className = 'btn-choice btn-higher';
-  document.getElementById('btnLower').className = 'btn-choice btn-lower';
-}
-
-let toastTimer;
-function showToast(msg,type){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className=`show ${type}`;
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.className='',3200);
-}
-
-/* ═══════════════════════ PICK ═══════════════════════ */
+/* ═══ PICK ═══ */
 function pick() {
-  if(idx+1>=deck.length){ deck=shuffle(CARDS); idx=0; }
-  let a=deck[idx], b=deck[idx+1];
-  let tries=0;
-  while(a.price===b.price && tries<12){
-    idx++;
-    if(idx+1>=deck.length){deck=shuffle(CARDS);idx=0;}
-    b=deck[idx+1]; tries++;
+  if(ptr + 1 >= deck.length) { deck = shuffle(DECK_BASE); ptr = 0; }
+  let a = deck[ptr], b = deck[ptr + 1], tries = 0;
+  while(a.price === b.price && tries < 20) {
+    ptr++;
+    if(ptr + 1 >= deck.length){ deck = shuffle(DECK_BASE); ptr = 0; }
+    b = deck[ptr + 1];
+    tries++;
   }
-  G.cardA=a; G.cardB=b;
-  idx+=2;
+  cardA = a; cardB = b;
+  ptr += 2;
 }
 
-/* ═══════════════════════ ROUND ═══════════════════════ */
+/* ═══ NEXT ROUND ═══ */
 function nextRound() {
-  G.answered = false;
+  answered = false;
   document.getElementById('next-btn').classList.remove('show');
-  resetButtons();
+
+  const btnH = document.getElementById('btnH');
+  const btnL = document.getElementById('btnL');
+  btnH.disabled = false;
+  btnL.disabled = false;
+  btnH.className = 'btn-guess btn-higher';
+  btnL.className = 'btn-guess btn-lower';
 
   pick();
-
-  // Animate panels
-  document.getElementById('panelLeft').classList.remove('panel-fade');
-  document.getElementById('panelRight').classList.remove('panel-fade');
-  void document.getElementById('panelLeft').offsetWidth;
-  document.getElementById('panelLeft').classList.add('panel-fade');
-  document.getElementById('panelRight').classList.add('panel-fade');
-
-  setPanel('left', G.cardA, true);
-  setPanel('right', G.cardB, false);
-
+  setPanel('A', cardA, true);
+  setPanel('B', cardB, false);
   renderHUD();
 }
 
-/* ═══════════════════════ GUESS ═══════════════════════ */
+/* ═══ TOAST ═══ */
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+/* ═══ GUESS ═══ */
 function guess(choice) {
-  if(G.answered) return;
-  G.answered = true;
+  if(answered) return;
+  answered = true;
 
-  document.getElementById('btnHigher').disabled = true;
-  document.getElementById('btnLower').disabled = true;
-
-  const pA = G.cardA.price, pB = G.cardB.price;
-  // "higher" = B is more expensive than A
-  const correctChoice = pB > pA ? 'higher' : 'lower';
-  const ok = choice === correctChoice;
+  const btnH = document.getElementById('btnH');
+  const btnL = document.getElementById('btnL');
+  btnH.disabled = true;
+  btnL.disabled = true;
 
   // Reveal B price
-  const pEl = document.getElementById('priceRight');
-  pEl.className = 'price-display';
-  pEl.textContent = `€${pB.toFixed(2)}`;
+  const pEl = document.getElementById('priceB');
+  pEl.className = 'price-val';
+  pEl.textContent = `€${cardB.price.toFixed(2)}`;
 
-  // Button feedback
-  const btnH = document.getElementById('btnHigher');
-  const btnL = document.getElementById('btnLower');
+  const correct = cardB.price > cardA.price ? 'higher' : 'lower';
+  const ok = (choice === correct);
 
-  if(choice === 'higher'){
-    btnH.className = 'btn-choice ' + (ok ? 'correct' : 'wrong');
-    if(!ok) btnL.className = 'btn-choice correct';
+  if(choice === 'higher') {
+    btnH.className = 'btn-guess ' + (ok ? 'correct' : 'wrong');
+    if(!ok) btnL.className = 'btn-guess correct';
   } else {
-    btnL.className = 'btn-choice ' + (ok ? 'correct' : 'wrong');
-    if(!ok) btnH.className = 'btn-choice correct';
+    btnL.className = 'btn-guess ' + (ok ? 'correct' : 'wrong');
+    if(!ok) btnH.className = 'btn-guess correct';
   }
 
-  if(ok){
-    G.score++; G.streak++;
-    if(G.score > best){ best = G.score; localStorage.setItem('ygo_moreorless_best', best); }
-    const diff = Math.abs(pA-pB).toFixed(2);
-    const s = G.streak >= 3 ? ` · 🔥 ×${G.streak}` : '';
-    showToast(`✓ Correct !  Diff €${diff}${s}`, 'ok');
+  if(ok) {
+    score++;
+    streak++;
+    if(score > best) { best = score; localStorage.setItem('ygo_best_v7', best); }
+    const diff = Math.abs(cardA.price - cardB.price).toFixed(2);
+    const s = streak >= 3 ? ` · 🔥 ×${streak}` : '';
+    showToast(`✓ Correct !  Écart : €${diff}${s}`, 'ok');
   } else {
-    G.streak = 0; G.lives--;
-    const expensive = pA > pB ? G.cardA : G.cardB;
-    showToast(`✗ Raté !  ${expensive.name} = €${Math.max(pA,pB).toFixed(2)}`, 'ko');
+    streak = 0;
+    lives--;
+    const maxP = Math.max(cardA.price, cardB.price);
+    const winnerName = cardA.price > cardB.price ? cardA.name : cardB.name;
+    showToast(`✗ Raté !  ${winnerName} = €${maxP.toFixed(2)}`, 'ko');
   }
 
   renderHUD();
 
-  if(G.lives <= 0){ setTimeout(gameOver, 1700); return; }
-  setTimeout(() => document.getElementById('next-btn').classList.add('show'), 800);
+  if(lives <= 0) {
+    setTimeout(gameOver, 1600);
+  } else {
+    setTimeout(() => document.getElementById('next-btn').classList.add('show'), 800);
+  }
 }
 
-/* ═══════════════════════ GAME OVER ═══════════════════════ */
-function gameOver(){
-  document.getElementById('goScore').textContent = G.score;
-  document.getElementById('goBest').textContent = best;
+/* ═══ GAME OVER ═══ */
+function gameOver() {
+  document.getElementById('goScore').textContent = score;
+  document.getElementById('goBest').textContent  = best;
   document.getElementById('gameover').classList.add('show');
 }
 
-function restart(){
-  G.score = G.streak = 0; G.lives = MAX_LIVES; G.answered = false; idx = 0;
+function restart() {
+  score = streak = 0;
+  lives = MAX_LIVES;
+  answered = false;
+  ptr = 0;
+  deck = shuffle(DECK_BASE);
   document.getElementById('gameover').classList.remove('show');
-  deck = shuffle(CARDS);
   renderHUD();
   nextRound();
 }
 
-/* ═══════════════════════ INIT ═══════════════════════ */
-deck = shuffle(CARDS);
+/* ═══ INIT ═══ */
+deck = shuffle(DECK_BASE);
 renderHUD();
 nextRound();
 </script>
